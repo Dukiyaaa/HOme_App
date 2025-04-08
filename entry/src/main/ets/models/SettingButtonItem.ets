@@ -1,0 +1,39 @@
+export class settingButtonItem{
+  title:string=''
+  icon:Resource=$r('app.media.app_icon')
+  inner:Resource=$r('app.media.app_icon')
+  routeTo:string=''
+}
+
+export const settingButtonItemList:settingButtonItem[]=[
+  {
+    title:'账户管理',
+    icon:$r('app.media.account_ad'),
+    inner:$r('app.media.inter'),
+    routeTo:'pages/Index'
+  },
+  {
+  title:'家庭房间管理',
+  icon:$r('app.media.room_ad'),
+  inner:$r('app.media.inter'),
+  routeTo:'pages/Index'
+  },
+  {
+    title:'家庭管理',
+    icon:$r('app.media.member_ad'),
+    inner:$r('app.media.inter'),
+    routeTo:'pages/Index'
+  },
+  {
+    title:'系统消息',
+    icon:$r('app.media.message_ad'),
+    inner:$r('app.media.inter'),
+    routeTo:'pages/Index'
+  },
+  {
+    title:'更多设置',
+    icon:$r('app.media.more_set'),
+    inner:$r('app.media.inter'),
+    routeTo:'pages/Index'
+  }
+]

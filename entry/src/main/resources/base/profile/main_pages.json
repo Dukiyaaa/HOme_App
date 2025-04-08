@@ -1,0 +1,31 @@
+{
+  "src": [
+    "pages/Index",
+    "pages/EquipmentPage",
+    "pages/ScenePage",
+    "pages/MinePage",
+    "pages/ModeSpecPage",
+    "pages/SceneSet",
+    "component/Dialog",
+    "pages/AirConditionPage",
+    "pages/AirConditionPage2",
+    "pages/LightPage",
+    "pages/LightPage2",
+    "pages/AddPage",
+    "pages/LockPage",
+    "pages/LockPage2",
+    "pages/CurtainPage",
+    "pages/CurtainPage2",
+    "pages/AirConditionSpecPage",
+    "pages/CurtainSpecPage",
+    "pages/LightSpecPage",
+    "pages/LockSpecPage",
+    "pages/AirConditionSpecPage2",
+    "pages/CurtainSpecPage2",
+    "pages/LightSpecPage2",
+    "pages/LockSpecPage2",
+    "pages/SpecEquipAddPage",
+    "pages/AITemperatureAndHumidityPage",
+    "pages/EquipList"
+  ]
+}

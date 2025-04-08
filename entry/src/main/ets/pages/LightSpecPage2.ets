@@ -1,0 +1,86 @@
+import {router} from '@kit.ArkUI'
+import {CloseAndOpenButton} from '../component/CloseAndOpenButton'
+import {HeadBackAndTitleComp,CloseAndYesButtonComp2,liClass} from '../component/HeadBackAndTitleComp'
+import {DataShow} from '../component/ElecAppDataShow'
+import {lightClass, elecAppTypeConst} from '../models/EquipData'
+import { roomClass } from '../models/RoomData'
+import {CloseAndYesButton,EquipSpecItemList} from '../models/CloseAndYesButton'
+import {SliderAdjust} from '../component/SliderAdjust'
+
+@Entry
+@Component
+struct LightSpecPage {
+  @State message: string = 'Hello World';
+  @State currentValue:number=0
+
+  //灯光参数
+  @State lightData:lightClass=new lightClass(0,'客厅灯',new roomClass(0,'客厅'),elecAppTypeConst.light)
+  aboutToAppear(): void {
+    const params=router.getParams()
+    if (params) {
+      this.lightData=params as lightClass
+    }
+  }
+
+  min:number=0
+  max:number=100
+  step:number=10
+  build() {
+    Scroll(){
+      Column(){
+        Row(){
+          CloseAndYesButtonComp2({closeAndYesButtonItem:EquipSpecItemList,item:new liClass()})
+        }.width('100%')
+        Blank()
+          .height(30)
+        List({space:20}){
+          ListItem(){
+            DataShow({
+              itemList:this.lightData.elecData
+            })
+          }
+          .shadow(ShadowStyle.OUTER_DEFAULT_SM)
+          .width('100%')
+          .height(100)
+          .padding({left:10,right:10})
+          .backgroundColor(Color.White)
+          .borderRadius(10)
+          ListItem(){
+            SliderAdjust({
+              title:'色温调节',
+              value:this.lightData.colTemperatue
+            })
+          }
+          .margin({top: 30})
+          .shadow(ShadowStyle.OUTER_DEFAULT_SM)
+          .width('100%')
+          .height(110)
+          .padding({left:10,right:10})
+          .backgroundColor(Color.White)
+          .borderRadius(10)
+          ListItem(){
+            SliderAdjust({
+              title:'亮度调节',
+              value:this.lightData.brightness
+            })
+          }
+          .shadow(ShadowStyle.OUTER_DEFAULT_SM)
+          .width('100%')
+          .height(100)
+          .padding({left:10,right:10})
+          .margin({top: 30})
+          .backgroundColor(Color.White)
+          .borderRadius(10)
+        }
+        .width('100%')
+        CloseAndOpenButton({
+          state: this.lightData.state
+        })
+          .position({top:'75%',left:'36%'})
+      }.height('100%')
+    }
+    .height('100%')
+    .backgroundImage($r('app.media.bgimg'))
+    .backgroundImageSize({width:'100%',height:'100%'})
+  }
+}
