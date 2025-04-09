@@ -111,14 +111,48 @@ export struct RoomDataComp{
           .scrollBar(BarState.Off)
         }
         //监控部分
-        Column(){
-          Text('监控画面')
+        Column() {
+          Stack() {
+            Image($r('app.media.monitor_preview'))
+              .width('100%')
+              .height('100%')
+              .objectFit(ImageFit.Cover)
+              .borderRadius(10)
+            
+            Column() {
+              Row() {
+                Text('监控画面')
+                  .fontSize(16)
+                  .fontColor('#FFFFFF')
+                Blank()
+                Image($r('app.media.camera'))
+                  .width(24)
+                  .height(24)
+              }
+              .width('100%')
+              .padding(12)
+              .backgroundColor('rgba(0, 0, 0, 0.3)')
+            }
+            .width('100%')
+            .position({ y: 0 })
+          }
         }
         .width('96%')
         .height(200)
-        .backgroundColor(Color.Gray)
+        .backgroundColor('#f1f3f5')
         .borderRadius(10)
         .shadow(ShadowStyle.OUTER_DEFAULT_SM)
+        .onClick(() => {
+          router.pushUrl({
+            url: 'pages/MonitorPage'
+          }, router.RouterMode.Single, (err) => {
+            if (err) {
+              console.error(`跳转失败: ${err.code}, ${err.message}`);
+              return;
+            }
+            console.info('跳转到监控页面成功');
+          });
+        })
         //下方电器列表部分
         Column({space:10}){
           List({space:15}){

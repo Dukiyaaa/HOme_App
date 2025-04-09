@@ -1,0 +1,20 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "模块描述"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "描述"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "标签"
+    },
+    {
+      "name": "internet_permission",
+      "value": "用于访问摄像头视频流"
+    }
+  ]
+} 

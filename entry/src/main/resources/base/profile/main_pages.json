@@ -26,6 +26,7 @@
     "pages/LockSpecPage2",
     "pages/SpecEquipAddPage",
     "pages/AITemperatureAndHumidityPage",
-    "pages/EquipList"
+    "pages/EquipList",
+    "pages/MonitorPage"
   ]
 }
