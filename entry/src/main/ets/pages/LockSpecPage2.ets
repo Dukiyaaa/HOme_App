@@ -49,8 +49,13 @@ struct LockSpecPage {
         }
         .width('100%')
         CloseAndOpenButton({
-          state: this.lockData.state,
-          body:new equipControl("attribute","door_setState",new door_stateParas(this.lockData.state==0?1:0))
+          stateFromParent: this.lockData.state,
+          updateState: {
+            run: (newState: number) => {
+              this.lockData.state = newState
+            }
+          },
+          deviceType: 'lock'
         })
           .position({top:'75%',left:'36%'})
       }.height('100%')

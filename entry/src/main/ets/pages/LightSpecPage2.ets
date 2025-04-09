@@ -74,8 +74,15 @@ struct LightSpecPage {
         }
         .width('100%')
         CloseAndOpenButton({
-          state: this.lightData.state
+          stateFromParent: this.lightData.state,
+          updateState: {
+            run: (newState: number) => {
+              this.lightData.state = newState
+            }
+          },
+          deviceType: 'light'
         })
+
           .position({top:'75%',left:'36%'})
       }.height('100%')
     }

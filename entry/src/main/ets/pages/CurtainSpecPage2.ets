@@ -65,11 +65,15 @@ struct CurtainSpecPage {
         }
         .width('100%')
         CloseAndOpenButton({
-          state: this.curtainData.state,
-          body: this.curtainData.state==0?
-            new equipControl("attribute","curtain_openPercent",new open_percentParas(100))
-            :new equipControl("attribute","curtain_openPercent",new open_percentParas(0))
+          stateFromParent: this.curtainData.state,
+          updateState: {
+            run: (newState: number) => {
+              this.curtainData.state = newState
+            }
+          },
+          deviceType: 'curtain'
         })
+
           .position({top:'75%',left:'36%'})
       }.height('100%')
     }

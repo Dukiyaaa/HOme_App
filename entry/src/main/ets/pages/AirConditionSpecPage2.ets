@@ -311,10 +311,16 @@ struct AirConditionSpecPage {
           }
           .width('100%')
           .height('650')
-          CloseAndOpenButton({
-            state: this.airConditionData.state,
-            body: new equipControl("attribute","airConditioner_setState",new airConditioner_stateParas(this.airConditionData.state==0?1:0))
-          })
+        CloseAndOpenButton({
+          stateFromParent: this.airConditionData.state,
+          updateState: {
+            run: (newState: number) => {
+              this.airConditionData.state = newState
+            }
+          },
+          deviceType: 'airCondition'
+        })
+
             .position({top:'75%',left:'36%'})
         }
         .height('100%')
