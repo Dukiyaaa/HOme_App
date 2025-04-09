@@ -32,7 +32,37 @@ struct AirConditionSpecPage {
       console.info(this.airConditionData.state.toString())
     }
   }
-  @State body:equipControl=new equipControl("arrtibute","curtain_openPercent",new airConditioner_stateParas(2))
+  
+  // 修改初始化方式
+  @State body: equipControl = new equipControl(
+    "attribute",
+    "airConditioner_setState",
+    new airConditioner_stateParas('cold', 1)  // 默认制冷模式，1档风速
+  )
+
+  // 新增：更新空调控制状态的方法
+  private updateAirConditionerState() {
+    // 确定当前模式
+    const mode: 'cold' | 'hot' = this.airConditionData.airConditionMode === airConditionModeConst.hot ? 'hot' : 'cold';
+    
+    // 确定当前风速档位
+    let speed: 1 | 2 | 3 = 1;  // 显式指定类型
+    switch(this.airConditionData.airConditionWind) {
+      case airConditionWindSpeedConst.low: speed = 1; break;
+      case airConditionWindSpeedConst.middle: speed = 2; break;
+      case airConditionWindSpeedConst.high: speed = 3; break;
+      default: speed = 1; // 默认1档，包括自动模式
+    }
+
+    // 构造并发送控制指令
+    const body = new equipControl(
+      "attribute",
+      "airConditioner_setState",
+      new airConditioner_stateParas(mode, speed)
+    );
+    
+    postEquipControl(body);
+  }
 
   build() {
       Column() {
@@ -103,6 +133,9 @@ struct AirConditionSpecPage {
                     Text('制冷')
                   }.onClick(()=>{
                     this.airConditionData.airConditionMode=airConditionModeConst.cold
+                    if(this.airConditionData.state === 1) {
+                      this.updateAirConditionerState()
+                    }
                   })
                   Column() {
                     Image(this.airConditionData.airConditionMode==airConditionModeConst.hot?
@@ -117,6 +150,9 @@ struct AirConditionSpecPage {
                     Text('制热')
                   }.onClick(()=>{
                     this.airConditionData.airConditionMode=airConditionModeConst.hot
+                    if(this.airConditionData.state === 1) {
+                      this.updateAirConditionerState()
+                    }
                   })
                   Column() {
                     Image(this.airConditionData.airConditionMode==airConditionModeConst.humidity?
@@ -194,6 +230,9 @@ struct AirConditionSpecPage {
                     Text('低')
                   }.onClick(()=>{
                     this.airConditionData.airConditionWind=airConditionWindSpeedConst.low
+                    if(this.airConditionData.state === 1) {
+                      this.updateAirConditionerState()
+                    }
                   })
                   Column() {
                     Image(this.airConditionData.airConditionWind==airConditionWindSpeedConst.middle?
@@ -208,6 +247,7 @@ struct AirConditionSpecPage {
                     Text('中')
                   }.onClick(()=>{
                     this.airConditionData.airConditionWind=airConditionWindSpeedConst.middle
+                    this.updateAirConditionerState()
                   })
                   Column() {
                     Image(this.airConditionData.airConditionWind==airConditionWindSpeedConst.high?
@@ -222,6 +262,7 @@ struct AirConditionSpecPage {
                     Text('高')
                   }.onClick(()=>{
                     this.airConditionData.airConditionWind=airConditionWindSpeedConst.high
+                    this.updateAirConditionerState()
                   })
                 }
                 .justifyContent(FlexAlign.Center)
@@ -316,6 +357,16 @@ struct AirConditionSpecPage {
           updateState: {
             run: (newState: number) => {
               this.airConditionData.state = newState
+              // 如果是打开状态，发送当前的模式和风速设置
+              if (newState === 1) {
+                const params = this.airConditionData.getCurrentControlParams()
+                const body = new equipControl(
+                  "attribute",
+                  "airConditioner_setState",
+                  new airConditioner_stateParas(params.mode, params.speed)
+                )
+                postEquipControl(body)
+              }
             }
           },
           deviceType: 'airCondition'

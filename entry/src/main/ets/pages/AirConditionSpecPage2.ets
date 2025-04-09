@@ -32,7 +32,32 @@ struct AirConditionSpecPage {
       this.airConditionData = params as airConditionClass
     }
   }
-  @State body:equipControl=new equipControl("arrtibute","curtain_openPercent",new airConditioner_stateParas(2))
+
+  @State body: equipControl = new equipControl(
+    "attribute",
+    "airConditioner_setState",
+    new airConditioner_stateParas('cold', 1)
+  )
+
+  private updateAirConditionerState() {
+    const mode: 'cold' | 'hot' = this.airConditionData.airConditionMode === airConditionModeConst.hot ? 'hot' : 'cold';
+    
+    let speed: 1 | 2 | 3 = 1;
+    switch(this.airConditionData.airConditionWind) {
+      case airConditionWindSpeedConst.low: speed = 1; break;
+      case airConditionWindSpeedConst.middle: speed = 2; break;
+      case airConditionWindSpeedConst.high: speed = 3; break;
+      default: speed = 1;
+    }
+
+    const body = new equipControl(
+      "attribute",
+      "airConditioner_setState",
+      new airConditioner_stateParas(mode, speed)
+    );
+    
+    postEquipControl(body);
+  }
 
   build() {
       Column() {
@@ -103,6 +128,7 @@ struct AirConditionSpecPage {
                     Text('制冷')
                   }.onClick(()=>{
                     this.airConditionData.airConditionMode=airConditionModeConst.cold
+                    this.updateAirConditionerState()
                   })
                   Column() {
                     Image(this.airConditionData.airConditionMode==airConditionModeConst.hot?
@@ -117,6 +143,7 @@ struct AirConditionSpecPage {
                     Text('制热')
                   }.onClick(()=>{
                     this.airConditionData.airConditionMode=airConditionModeConst.hot
+                    this.updateAirConditionerState()
                   })
                   Column() {
                     Image(this.airConditionData.airConditionMode==airConditionModeConst.humidity?
@@ -194,6 +221,7 @@ struct AirConditionSpecPage {
                     Text('低')
                   }.onClick(()=>{
                     this.airConditionData.airConditionWind=airConditionWindSpeedConst.low
+                    this.updateAirConditionerState()
                   })
                   Column() {
                     Image(this.airConditionData.airConditionWind==airConditionWindSpeedConst.middle?
@@ -208,6 +236,7 @@ struct AirConditionSpecPage {
                     Text('中')
                   }.onClick(()=>{
                     this.airConditionData.airConditionWind=airConditionWindSpeedConst.middle
+                    this.updateAirConditionerState()
                   })
                   Column() {
                     Image(this.airConditionData.airConditionWind==airConditionWindSpeedConst.high?
@@ -222,6 +251,7 @@ struct AirConditionSpecPage {
                     Text('高')
                   }.onClick(()=>{
                     this.airConditionData.airConditionWind=airConditionWindSpeedConst.high
+                    this.updateAirConditionerState()
                   })
                 }
                 .justifyContent(FlexAlign.Center)

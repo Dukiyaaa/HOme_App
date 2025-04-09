@@ -61,6 +61,23 @@ export class airConditionClass {
     this.belongRoom = belongRoom
     this.type = type
   }
+
+  // 修改方法返回类型
+  getCurrentControlParams(): AirConditionerParams {
+    // 确定模式
+    const mode: 'cold' | 'hot' = this.airConditionMode === airConditionModeConst.hot ? 'hot' : 'cold'
+    
+    // 确定风速
+    let speed: 1 | 2 | 3 = 1
+    switch(this.airConditionWind) {
+      case airConditionWindSpeedConst.low: speed = 1; break;
+      case airConditionWindSpeedConst.middle: speed = 2; break;
+      case airConditionWindSpeedConst.high: speed = 3; break;
+      default: speed = 1;
+    }
+
+    return { mode, speed }
+  }
 }
 
 //空调模式常量
@@ -209,3 +226,9 @@ export class elecAppRouteToClass2{
   lockRouteTo:string='pages/LockPage2'
 }
 export const elecAppRouteToConst2=new elecAppRouteToClass2()
+
+// 添加空调控制参数接口
+export interface AirConditionerParams {
+  mode: 'cold' | 'hot'     // 使用字面量类型
+  speed: 0 | 1 | 2 | 3     // 使用字面量类型，0表示关闭
+}
