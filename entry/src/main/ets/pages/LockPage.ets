@@ -2,11 +2,14 @@ import {LockBackItemList} from '../models/CloseAndYesButton'
 import {router} from '@kit.ArkUI'
 import {ElecAppButtonSpecItem,LockSpecItemList} from '../models/ElecAppButtonSpec'
 import {HeadBackAndTitleComp} from '../component/HeadBackAndTitleComp'
-import {lockClass,typeElecAppState} from '../models/EquipData'
+import {lockClass,typeElecAppState,elecAppTypeConst} from '../models/EquipData'
+import { roomClass } from "../models/RoomData"
 
 @Component
 struct LockButton{
   @ObjectLink item:lockClass
+  @State item2:lockClass[]=[new lockClass(0,'门锁',new roomClass(0,'客厅'),elecAppTypeConst.lock,)]
+
   build() {
     Button({type:ButtonType.Normal,stateEffect: true}){
       Row({space:10}){
@@ -42,12 +45,12 @@ struct LockButton{
 @Entry
 @Component
 struct LockPage {
-  @State lockListData:typeElecAppState=new typeElecAppState([],-1)
+  @State lockListData:typeElecAppState=new typeElecAppState([new lockClass(0,'门锁',new roomClass(0,'客厅'),elecAppTypeConst.lock,)],-1)
 
-  aboutToAppear(){
+  onPageShow(): void {
     const params=router.getParams()
     if (params) {
-      this.lockListData=params as typeElecAppState
+      this.lockListData=new typeElecAppState([new lockClass(0,'门锁',new roomClass(0,'客厅'),elecAppTypeConst.lock,),params as lockClass],-1)
     }
   }
   //窗帘按钮
