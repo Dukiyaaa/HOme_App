@@ -10,9 +10,7 @@ import {
   airConditionModeConst,
   airConditionWindWayConst} from '../models/EquipData'
 import { roomClass } from '../models/RoomData'
-import {LightDataShowItemList,DataShowItem} from '../models/DataShowData'
 import {CloseAndOpenButton} from '../component/CloseAndOpenButton'
-import {DataShow} from '../component/ElecAppDataShow'
 import {PowerConsumption,LightSpecData} from '../models/ElecAppSpecData'
 import {SliderAdjust} from '../component/SliderAdjust'
 import {InputAdjust} from '../component/InputAdjust'
@@ -66,21 +64,8 @@ struct AirConditionSpecPage {
         }.width('100%')
         Blank().height(30)
           List({ space: 20 }) {
-            //耗电情况
-            ListItem() {
-              DataShow({
-                itemList: this.airConditionData.elecData
-              })
-            }
-            .shadow(ShadowStyle.OUTER_DEFAULT_SM)
-            .width('100%')
-            .height(100)
-            .padding({ left: 10, right: 10 })
-            .backgroundColor(Color.White)
-            .borderRadius(10)
             //温度调节
             ListItem() {
-              // this.SliderAdjust('亮度调节')
               InputAdjust({
                 title: '温度',
                 value: this.airConditionData.temperature,
@@ -93,7 +78,6 @@ struct AirConditionSpecPage {
             .width('100%')
             .height(100)
             .padding({ left: 10, right: 10 })
-            .margin({ top: 30 })
             .backgroundColor(Color.White)
             .borderRadius(10)
             //模式

@@ -8,49 +8,52 @@ import { roomClass } from "../models/RoomData"
 @Component
 struct LockButton{
   @ObjectLink item:lockClass
-  @State item2:lockClass[]=[new lockClass(0,'门锁',new roomClass(0,'客厅'),elecAppTypeConst.lock,)]
+  @State item2:lockClass[]=[new lockClass(0,'门锁',new roomClass(0,'客厅'),elecAppTypeConst.lock)]
 
   build() {
     Button({type:ButtonType.Normal,stateEffect: true}){
       Row({space:10}){
-        Image(this.item.state==0?this.item.type.typeIconClose:this.item.type.typeIconOpen)
+        Image(this.item?.type?.typeIconClose && this.item?.type?.typeIconOpen ? 
+          (this.item.state==0?this.item.type.typeIconClose:this.item.type.typeIconOpen) : 
+          $r('app.media.close2_gray'))
           .width(40)
         Column(){
-          Text(this.item.title).fontSize(20)
+          Text(this.item?.title || '未知门锁').fontSize(20)
         }.alignItems(HorizontalAlign.Start)
       }.width('88%')
     }
     .onClick(() => {
-      router.pushUrl({
-        url:'pages/LockSpecPage',
-        params:this.item
-      },router.RouterMode.Single,(err) => {
-        if (err) {
-          console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
-          return;
-        }
-        console.info('Invoke pushUrl succeeded.');
-      })
-      console.info(this.item.state.toString())
+      if (this.item) {
+        router.pushUrl({
+          url:'pages/LockSpecPage',
+          params:this.item
+        },router.RouterMode.Single,(err) => {
+          if (err) {
+            console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
+            return;
+          }
+          console.info('Invoke pushUrl succeeded.');
+        })
+        console.info(this.item.state.toString())
+      }
     })
     .height('100')
     .width('100%')
     .borderRadius(10)
     .backgroundColor(Color.White)
   }
-
 }
 
 
 @Entry
 @Component
 struct LockPage {
-  @State lockListData:typeElecAppState=new typeElecAppState([new lockClass(0,'门锁',new roomClass(0,'客厅'),elecAppTypeConst.lock,)],-1)
+  @State lockListData:typeElecAppState=new typeElecAppState([new lockClass(0,'门锁',new roomClass(0,'客厅'),elecAppTypeConst.lock)],-1)
 
   onPageShow(): void {
     const params=router.getParams()
     if (params) {
-      this.lockListData=new typeElecAppState([new lockClass(0,'门锁',new roomClass(0,'客厅'),elecAppTypeConst.lock,),params as lockClass],-1)
+      this.lockListData=new typeElecAppState([new lockClass(0,'门锁',new roomClass(0,'客厅'),elecAppTypeConst.lock),params as lockClass],-1)
     }
   }
   //窗帘按钮

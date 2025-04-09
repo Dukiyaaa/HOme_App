@@ -1,7 +1,6 @@
 import { router } from '@kit.ArkUI'
 import { CloseAndOpenButton } from '../component/CloseAndOpenButton'
 import { HeadBackAndTitleComp } from '../component/HeadBackAndTitleComp'
-import { DataShow } from '../component/ElecAppDataShow'
 import { curtainClass, elecAppTypeConst } from '../models/EquipData'
 import { roomClass } from '../models/RoomData'
 import { CloseAndYesButton } from '../models/CloseAndYesButton'
@@ -55,16 +54,6 @@ struct CurtainSpecPage {
 
       List({ space: 20 }) {
         ListItem() {
-          DataShow({ itemList: this.curtainData.elecData })
-        }
-        .shadow(ShadowStyle.OUTER_DEFAULT_SM)
-        .width('100%')
-        .height(100)
-        .padding({ left: 10, right: 10 })
-        .backgroundColor(Color.White)
-        .borderRadius(10)
-
-        ListItem() {
           SliderAdjust({
             title: '开度调节',
             value: this.currentOpenPercent,
@@ -80,7 +69,6 @@ struct CurtainSpecPage {
         .width('100%')
         .height(100)
         .padding({ left: 10, right: 10 })
-        .margin({ top: 30 })
         .backgroundColor(Color.White)
         .borderRadius(10)
       }

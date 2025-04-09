@@ -1,7 +1,6 @@
 import {router} from '@kit.ArkUI'
 import {CloseAndOpenButton} from '../component/CloseAndOpenButton'
 import {HeadBackAndTitleComp} from '../component/HeadBackAndTitleComp'
-import {DataShow} from '../component/ElecAppDataShow'
 import {lightClass, elecAppTypeConst} from '../models/EquipData'
 import { roomClass } from '../models/RoomData'
 import {CloseAndYesButton} from '../models/CloseAndYesButton'
@@ -117,18 +116,6 @@ struct LightSpecPage {
       })
       Blank().height(30)
       List({ space: 20 }) {
-        ListItem() {
-          DataShow({
-            itemList: this.lightData.elecData
-          })
-        }
-        .shadow(ShadowStyle.OUTER_DEFAULT_SM)
-        .width('100%')
-        .height(100)
-        .padding({ left: 10, right: 10 })
-        .backgroundColor(Color.White)
-        .borderRadius(10)
-
         ListItem() {
           SliderAdjust({
             title: '亮度调节',

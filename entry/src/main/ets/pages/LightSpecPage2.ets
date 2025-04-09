@@ -1,7 +1,6 @@
 import {router} from '@kit.ArkUI'
 import {CloseAndOpenButton} from '../component/CloseAndOpenButton'
 import {HeadBackAndTitleComp,CloseAndYesButtonComp2,liClass} from '../component/HeadBackAndTitleComp'
-import {DataShow} from '../component/ElecAppDataShow'
 import {lightClass, elecAppTypeConst} from '../models/EquipData'
 import { roomClass } from '../models/RoomData'
 import {CloseAndYesButton,EquipSpecItemList} from '../models/CloseAndYesButton'
@@ -35,23 +34,11 @@ struct LightSpecPage {
           .height(30)
         List({space:20}){
           ListItem(){
-            DataShow({
-              itemList:this.lightData.elecData
-            })
-          }
-          .shadow(ShadowStyle.OUTER_DEFAULT_SM)
-          .width('100%')
-          .height(100)
-          .padding({left:10,right:10})
-          .backgroundColor(Color.White)
-          .borderRadius(10)
-          ListItem(){
             SliderAdjust({
               title:'色温调节',
               value:this.lightData.colTemperatue
             })
           }
-          .margin({top: 30})
           .shadow(ShadowStyle.OUTER_DEFAULT_SM)
           .width('100%')
           .height(110)
@@ -61,7 +48,10 @@ struct LightSpecPage {
           ListItem(){
             SliderAdjust({
               title:'亮度调节',
-              value:this.lightData.brightness
+              value:this.currentValue,
+              onValueChange: (value: number) => {
+                this.currentValue = value
+              }
             })
           }
           .shadow(ShadowStyle.OUTER_DEFAULT_SM)

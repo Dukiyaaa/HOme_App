@@ -1,12 +1,10 @@
 import {router} from '@kit.ArkUI'
 import {CloseAndOpenButton} from '../component/CloseAndOpenButton'
 import {HeadBackAndTitleComp} from '../component/HeadBackAndTitleComp'
-import {DataShow} from '../component/ElecAppDataShow'
 import {lockClass, elecAppTypeConst} from '../models/EquipData'
 import { roomClass } from '../models/RoomData'
 import {CloseAndYesButton} from '../models/CloseAndYesButton'
 import {equipControl,door_stateParas} from '../http/basicEquipAdjust'
-
 
 @Entry
 @Component
@@ -33,17 +31,6 @@ struct LockSpecPage {
         Blank()
           .height(30)
         List({space:20}){
-          ListItem(){
-            DataShow({
-              itemList:this.lockData.elecData
-            })
-          }
-          .shadow(ShadowStyle.OUTER_DEFAULT_SM)
-          .width('100%')
-          .height(100)
-          .padding({left:10,right:10})
-          .backgroundColor(Color.White)
-          .borderRadius(10)
         }
         .width('100%')
         CloseAndOpenButton({

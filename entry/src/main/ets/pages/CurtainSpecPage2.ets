@@ -1,14 +1,11 @@
 import {router} from '@kit.ArkUI'
 import {CloseAndOpenButton} from '../component/CloseAndOpenButton'
 import { CloseAndYesButtonComp2, curClass, HeadBackAndTitleComp} from '../component/HeadBackAndTitleComp'
-import {DataShow} from '../component/ElecAppDataShow'
 import {curtainClass, elecAppTypeConst} from '../models/EquipData'
 import { roomClass } from '../models/RoomData'
 import {SliderAdjust} from '../component/SliderAdjust'
 import {open_percentParas,equipControl} from '../http/basicEquipAdjust'
 import {AirConditionSpecBackItemList,CloseAndYesButtonItem,CloseAndYesButton,EquipSpecItemList} from '../models/CloseAndYesButton'
-
-
 
 @Entry
 @Component
@@ -38,17 +35,6 @@ struct CurtainSpecPage {
           .height(30)
         List({space:20}){
           ListItem(){
-            DataShow({
-              itemList:this.curtainData.elecData
-            })
-          }
-          .shadow(ShadowStyle.OUTER_DEFAULT_SM)
-          .width('100%')
-          .height(100)
-          .padding({left:10,right:10})
-          .backgroundColor(Color.White)
-          .borderRadius(10)
-          ListItem(){
             SliderAdjust({
               title:'开度调节',
               value:this.curtainData.state,
@@ -59,7 +45,6 @@ struct CurtainSpecPage {
           .width('100%')
           .height(100)
           .padding({left:10,right:10})
-          .margin({top: 30})
           .backgroundColor(Color.White)
           .borderRadius(10)
         }
@@ -73,7 +58,6 @@ struct CurtainSpecPage {
           },
           deviceType: 'curtain'
         })
-
           .position({top:'75%',left:'36%'})
       }.height('100%')
     }
