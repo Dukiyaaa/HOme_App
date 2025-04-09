@@ -83,6 +83,52 @@ export struct CloseAndYesButtonComp{
 }
 
 @Component
+export struct CloseAndYesButtonCompLock{
+  @State closeAndYesButtonItem:CloseAndYesButtonItem[]=[]
+  build() {
+    Row(){
+      Button({type:ButtonType.Circle,stateEffect: true}){
+        Image(this.closeAndYesButtonItem[0].image).width(30).height(30)
+      }
+      .width(55)
+      .height(55)
+      .backgroundColor(Color.Transparent)
+      .onClick(()=>{
+        router.replaceUrl({
+          url:this.closeAndYesButtonItem[0].routeTo
+        },router.RouterMode.Single,(err) => {
+          if (err) {
+            console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
+            return;
+          }
+          console.info('Invoke pushUrl succeeded.');
+        })
+      })
+      Text(this.closeAndYesButtonItem[0].title).fontSize(20)
+      Blank()
+      Button({type:ButtonType.Circle,stateEffect: true}){
+        Image(this.closeAndYesButtonItem[1].image).width(30).height(30)
+      }
+      .width(55)
+      .height(55)
+      .backgroundColor(Color.Transparent)
+      .onClick(()=>{
+        router.replaceUrl({
+          url:this.closeAndYesButtonItem[0].routeTo
+        },router.RouterMode.Single,(err) => {
+          if (err) {
+            console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
+            return;
+          }
+          console.info('Invoke pushUrl succeeded.');
+        })
+      })
+    }.width('100%')
+  }
+}
+
+
+@Component
 export struct CloseAndYesButtonComp3{
   @State closeAndYesButtonItem:CloseAndYesButtonItem[]=[]
   @State scedate:sceData=new sceData()
