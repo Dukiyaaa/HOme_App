@@ -89,7 +89,7 @@ export struct MinePage {
           ListItem(){
             Button({type:ButtonType.Normal}){
               Row(){
-                Image(item.icon).width(40)
+                Image(item.icon).width(35).margin({right:10})
                 Text(item.title)
                 Blank()
                 Image(item.inner).width(40)
