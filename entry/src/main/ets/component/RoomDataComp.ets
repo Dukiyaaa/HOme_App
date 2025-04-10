@@ -114,6 +114,17 @@ export struct RoomDataComp{
             .backgroundColor(Color.White)
             .borderRadius(8)
             .width('32%')
+            .onClick(() => {
+              router.pushUrl({
+                url: 'pages/TemperatureDetailPage'
+              }, router.RouterMode.Single, (err) => {
+                if (err) {
+                  console.error(`跳转温度详情页失败: ${err.message}`)
+                  return
+                }
+                console.info('跳转温度详情页成功')
+              })
+            })
 
             // 湿度显示
             Button({type:ButtonType.Normal}){
@@ -143,6 +154,17 @@ export struct RoomDataComp{
             .backgroundColor(Color.White)
             .borderRadius(8)
             .width('32%')
+            .onClick(() => {
+              router.pushUrl({
+                url: 'pages/HumidityDetailPage'
+              }, router.RouterMode.Single, (err) => {
+                if (err) {
+                  console.error(`跳转湿度详情页失败: ${err.message}`)
+                  return
+                }
+                console.info('跳转湿度详情页成功')
+              })
+            })
 
             // 电量显示
             Button({type:ButtonType.Normal}){
@@ -153,7 +175,7 @@ export struct RoomDataComp{
                     .fontSize(12)
                     .fontColor(Color.Gray)
                   Row() {
-                    Text(this.electricityData?.power?.toFixed(2) ?? '0.00')
+                    Text(this.electricityData.power.toFixed(2))
                       .fontColor('#5686E1')
                       .fontSize(18)
                     Text('mW')
@@ -172,6 +194,17 @@ export struct RoomDataComp{
             .backgroundColor(Color.White)
             .borderRadius(8)
             .width('32%')
+            .onClick(() => {
+              router.pushUrl({
+                url: 'pages/PowerDetailPage'
+              }, router.RouterMode.Single, (err) => {
+                if (err) {
+                  console.error(`跳转用电详情页失败: ${err.message}`)
+                  return
+                }
+                console.info('跳转用电详情页成功')
+              })
+            })
           }
           .width('94%')
           .justifyContent(FlexAlign.SpaceBetween)

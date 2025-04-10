@@ -27,6 +27,9 @@
     "pages/SpecEquipAddPage",
     "pages/AITemperatureAndHumidityPage",
     "pages/EquipList",
-    "pages/MonitorPage"
+    "pages/MonitorPage",
+    "pages/TemperatureDetailPage",
+    "pages/HumidityDetailPage",
+    "pages/PowerDetailPage"
   ]
 }
