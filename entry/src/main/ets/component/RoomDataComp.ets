@@ -9,6 +9,7 @@ import {
   lockClass,
   lightClass} from '../models/EquipData'
 import {roomAndElecListClass,TemperatureAndHumidity} from '../models/RoomData'
+import {ElectricityData} from '../models/ElectricityData'
 import {ElectricityDataComp} from './ElectricityDataComp'
 
 @Component
@@ -74,6 +75,7 @@ export struct RoomDataComp{
   @ObjectLink temperatureAndHumidityData:TemperatureAndHumidity
   @ObjectLink roomAndElecAppData:roomAndElecListClass
   @ObjectLink sceneDataList:SceneClassList
+  @ObjectLink electricityData: ElectricityData
 
   build() {
     TabContent(){
@@ -151,7 +153,7 @@ export struct RoomDataComp{
                     .fontSize(12)
                     .fontColor(Color.Gray)
                   Row() {
-                    Text('4.07')
+                    Text(this.electricityData?.power?.toFixed(2) ?? '0.00')
                       .fontColor('#5686E1')
                       .fontSize(18)
                     Text('mW')
@@ -277,31 +279,38 @@ export struct SceneButton{
   build(){
     Button({ type: ButtonType.Normal, stateEffect: true }){
       Row(){
-        Image(this.sceneData.closeOrOpen==0?this.sceneData.sceneImageClose:this.sceneData.sceneImageOpen)
-          .width(45)
-          .margin({right:10})
-        Column(){
-          Text(this.sceneData.sceneTitle)
-          Row({space:3}){
-            if (this.sceneData.sceneAction.airConditionAction!==undefined){
-              Image(this.sceneData.sceneAction.airConditionAction[0].type.typeIconOpen)
-                .width(20)
-            }
-            if (this.sceneData.sceneAction.lightAction!==undefined){
-              Image(this.sceneData.sceneAction.lightAction[0].type.typeIconOpen)
-                .width(20)
-            }
-            if (this.sceneData.sceneAction.curtainAction!==undefined){
-              Image(this.sceneData.sceneAction.curtainAction[0].type.typeIconOpen)
-                .width(20)
-            }
-            if (this.sceneData.sceneAction.lockAction!==undefined){
-              Image(this.sceneData.sceneAction.lockAction[0].type.typeIconOpen)
-                .width(20)
-            }
+        Column() {
+          Row(){
+            Image(this.sceneData.closeOrOpen==0?this.sceneData.sceneImageClose:this.sceneData.sceneImageOpen)
+              .width(45)
+              .margin({right:10})
+            Column(){
+              Text(this.sceneData.sceneTitle)
+                .margin({bottom: 8})
+              Row({space:6}){
+                if (this.sceneData.sceneAction.airConditionAction!==undefined){
+                  Image(this.sceneData.sceneAction.airConditionAction[0].type.typeIconOpen)
+                    .width(20)
+                }
+                if (this.sceneData.sceneAction.lightAction!==undefined){
+                  Image(this.sceneData.sceneAction.lightAction[0].type.typeIconOpen)
+                    .width(20)
+                }
+                if (this.sceneData.sceneAction.curtainAction!==undefined){
+                  Image(this.sceneData.sceneAction.curtainAction[0].type.typeIconOpen)
+                    .width(20)
+                }
+                if (this.sceneData.sceneAction.lockAction!==undefined){
+                  Image(this.sceneData.sceneAction.lockAction[0].type.typeIconOpen)
+                    .width(20)
+                }
+              }
+            }.alignItems(HorizontalAlign.Start)
           }
-        }.alignItems(HorizontalAlign.Start)
-      }.width('100%')
+        }
+        .padding({left: 5, right: 15, top: 12, bottom: 12})
+        .width('100%')
+      }
     }
     .height(70)
     .width('48%')

@@ -10,6 +10,8 @@ import {roomClass,roomAndElecListClass,TemperatureAndHumidity} from '../models/R
 import {UserInfoComp} from '../component/UserInfoComp'
 import {RoomDataComp,} from '../component/RoomDataComp'
 import { getLatestTemperatureHumidity } from '../http/temperatureAndHumidity'
+import { getLatestElectricityData } from '../http/electricityData'
+import { ElectricityData } from '../models/ElectricityData'
 
 @Entry
 @Component
@@ -75,16 +77,18 @@ struct EquipmentPage {
   @State userData:UserData=new UserData()
   //温度湿度数据
   @State temperatureAndHumdityData:TemperatureAndHumidity=new TemperatureAndHumidity(new roomClass(0,'客厅'),20,50)
+  //用电数据
+  @State electricityData: ElectricityData = new ElectricityData(0)
 
   // 定时器ID
   private timerId: number = -1
 
   aboutToAppear() {
     // 页面加载时立即获取一次数据
-    this.fetchTemperatureHumidity()
+    this.fetchAllData()
     // 设置定时器,每10秒获取一次数据
     this.timerId = setInterval(() => {
-      this.fetchTemperatureHumidity()
+      this.fetchAllData()
     }, 1000)
   }
 
@@ -93,6 +97,14 @@ struct EquipmentPage {
     if (this.timerId !== -1) {
       clearInterval(this.timerId)
     }
+  }
+
+  // 获取所有数据
+  private async fetchAllData() {
+    await Promise.all([
+      this.fetchTemperatureHumidity(),
+      this.fetchElectricityData()
+    ])
   }
 
   // 获取温湿度数据
@@ -108,6 +120,25 @@ struct EquipmentPage {
     }
   }
 
+  // 获取用电数据
+  private async fetchElectricityData() {
+    try {
+      const response = await getLatestElectricityData()
+      console.info('获取用电数据响应:', JSON.stringify(response))
+      if (response.status === 'success' && response.latest) {
+        // 将微瓦转换为毫瓦
+        const powerInMw = response.latest.power / 1000
+        console.info('用电数据(μW):', response.latest.power)
+        console.info('转换后用电数据(mW):', powerInMw)
+        this.electricityData.power = powerInMw
+      } else {
+        console.warn('用电数据响应格式不正确:', response)
+      }
+    } catch (error) {
+      console.error('获取用电数据失败:', error)
+    }
+  }
+
   build() {
     Column(){
       //用户信息栏
@@ -118,7 +149,8 @@ struct EquipmentPage {
           RoomDataComp({
             temperatureAndHumidityData:this.temperatureAndHumdityData,
             sceneDataList:this.tempSceneList,
-            roomAndElecAppData:item
+            roomAndElecAppData:item,
+            electricityData: this.electricityData
           })
         },(item:roomAndElecListClass)=>item.room.roomId.toString())
       }
