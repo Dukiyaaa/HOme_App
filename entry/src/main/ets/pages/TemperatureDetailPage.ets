@@ -10,19 +10,18 @@ const BASE_URL = 'http://43.155.36.236:5000'
 struct TemperatureDetailPage {
   @State currentTemp: number = 0
   @State chartImageUrl: string = `${BASE_URL}/chart/temperature`
-  @State chartKey: number = 0  // 添加一个状态来强制刷新图表
   private refreshTimer: number = -1
 
   aboutToAppear() {
-    console.info('[Temperature Page] Page aboutToAppear')
-    // 获取初始数据
+    console.info('[Temperature Page] Page aboutToAppear, initiating initial data load')
+    // 立即加载数据
     this.refreshData()
     
-    // 设置定时刷新，每5分钟一次
+    // 设置定时刷新
     this.refreshTimer = setInterval(() => {
       console.info('[Temperature Page] Refresh timer triggered')
       this.refreshData()
-    }, 5 * 60 * 1000) // 5分钟
+    }, 5 * 60 * 1000)
   }
 
   aboutToDisappear() {
@@ -32,26 +31,22 @@ struct TemperatureDetailPage {
     }
   }
 
-  // 刷新数据
   async refreshData() {
     try {
       console.info('[Temperature Page] Refreshing data')
       const latestData = await getLatestTemperature()
       this.currentTemp = latestData.temperature_indoor
       
-      // 更新图表URL并增加key以强制刷新
+      // 更新图表URL时添加时间戳
       this.chartImageUrl = `${BASE_URL}/chart/temperature?t=${Date.now()}`
-      this.chartKey += 1  // 增加key值强制重新渲染
-      
-      console.info('[Temperature Page] Data refreshed, chart key:', this.chartKey)
+      console.info('[Temperature Page] Data refreshed successfully, new URL:', this.chartImageUrl)
     } catch (error) {
-      console.error('[Temperature Page] Failed to refresh data:', error)
+      console.error('[Temperature Page] Failed to refresh data:', error.toString())
     }
   }
 
   build() {
     Column() {
-      // 顶部导航栏
       Row() {
         Image($r('app.media.back'))
           .width(24)
@@ -72,7 +67,6 @@ struct TemperatureDetailPage {
 
       Scroll() {
         Column() {
-          // 当前温度显示
           Column() {
             Row() {
               Image($r('app.media.temperature_set'))
@@ -105,21 +99,18 @@ struct TemperatureDetailPage {
           .backgroundColor(Color.White)
           .borderRadius(12)
 
-          // 历史数据图表
           Column() {
             Text('温度历史数据（近5小时）')
               .fontSize(16)
               .fontWeight(FontWeight.Medium)
               .margin({ top: 8, bottom: 8 })
             
-            if (this.chartKey >= 0) {  // 使用条件渲染强制刷新
-              LineChart({ 
-                imageUrl: this.chartImageUrl
-              })
-                .width('100%')
-                .height(200)
-                .margin({ top: 8 })
-            }
+            LineChart({ 
+              imageUrl: this.chartImageUrl
+            })
+              .width('100%')
+              .height(300)
+              .margin({ top: 8 })
           }
           .width('94%')
           .margin({ top: 12 })
@@ -127,7 +118,6 @@ struct TemperatureDetailPage {
           .backgroundColor(Color.White)
           .borderRadius(12)
 
-          // 底部按钮
           Row() {
             Button('刷新数据')
               .width('45%')
