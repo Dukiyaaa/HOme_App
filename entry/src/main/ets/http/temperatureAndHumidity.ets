@@ -1,6 +1,6 @@
 import { http } from '@kit.NetworkKit'
 
-const TEMPERATURE_HUMIDITY_URL = 'http://localhost:5000/data/latest'
+const TEMPERATURE_HUMIDITY_URL = 'http://43.155.36.236:5000/data/latest'
 
 interface LatestData {
   temperature_indoor: number;

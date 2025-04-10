@@ -82,10 +82,10 @@ struct EquipmentPage {
   aboutToAppear() {
     // 页面加载时立即获取一次数据
     this.fetchTemperatureHumidity()
-    // 设置定时器,每30秒获取一次数据
+    // 设置定时器,每10秒获取一次数据
     this.timerId = setInterval(() => {
       this.fetchTemperatureHumidity()
-    }, 30000)
+    }, 1000)
   }
 
   aboutToDisappear() {
