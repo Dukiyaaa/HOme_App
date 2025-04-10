@@ -41,10 +41,9 @@ export struct CustomDialogExample {
     }
     .onClick(() => {
       if(item.index==0){
-        console.info("niahoaaa")
         this.controller?.close()
         router.pushUrl({
-          url:'pages/EquipList'
+          url:'pages/EquipList2'
         },router.RouterMode.Single,(err) => {
           if (err) {
             console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);

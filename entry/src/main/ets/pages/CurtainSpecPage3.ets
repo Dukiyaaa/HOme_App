@@ -48,7 +48,7 @@ struct CurtainSpecPage {
   build() {
     Column() {
       Row(){
-        CloseAndYesButtonComp2({closeAndYesButtonItem:EquipSpecItemList,item:new curClass(0)})
+        CloseAndYesButtonComp2({closeAndYesButtonItem:EquipSpecItemList,item:new curClass(1)})
       }.width('100%')
       Blank().height(30)
 

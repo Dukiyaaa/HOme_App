@@ -112,7 +112,7 @@ struct LightSpecPage {
   build() {
     Column() {
       Row(){
-        CloseAndYesButtonComp2({closeAndYesButtonItem:EquipSpecItemList,item:new liClass(0)})
+        CloseAndYesButtonComp2({closeAndYesButtonItem:EquipSpecItemList,item:new liClass(1)})
       }.width('100%')
       Blank().height(30)
       List({ space: 20 }) {

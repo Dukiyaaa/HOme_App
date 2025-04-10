@@ -28,7 +28,7 @@ struct LockSpecPage {
     Scroll(){
       Column(){
         Row(){
-          CloseAndYesButtonComp2({closeAndYesButtonItem:EquipSpecItemList,item:new loClass(0)})
+          CloseAndYesButtonComp2({closeAndYesButtonItem:EquipSpecItemList,item:new loClass(1)})
         }.width('100%')
         Blank()
           .height(30)

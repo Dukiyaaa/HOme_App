@@ -55,7 +55,12 @@ struct SceneSet {
     console.info("zheli5")
     if(params){
       const temp=params as airClass
-      this.equipData.push(temp.name)
+      if (temp.state==0) {
+        this.equipData.push(temp.name)
+      }
+      else {
+        this.equipData2.push(temp.name)
+      }
       console.info(this.equipData[0])
     }else{
       console.info("undefine")

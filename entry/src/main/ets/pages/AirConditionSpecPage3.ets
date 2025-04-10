@@ -66,7 +66,7 @@ struct AirConditionSpecPage {
   build() {
     Column() {
       Row(){
-        CloseAndYesButtonComp2({closeAndYesButtonItem:EquipSpecItemList,item:new airClass(0)})
+        CloseAndYesButtonComp2({closeAndYesButtonItem:EquipSpecItemList,item:new airClass(1)})
       }.width('100%')
       Blank().height(30)
       List({ space: 20 }) {

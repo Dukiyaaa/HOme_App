@@ -7,7 +7,8 @@ import {
   airConditionClass,
   curtainClass,
   lockClass,
-  lightClass} from '../models/EquipData'
+  lightClass,
+  elecAppRouteToConst3} from '../models/EquipData'
 import {roomAndElecListClass,TemperatureAndHumidity} from '../models/RoomData'
 import {ElectricityData} from '../models/ElectricityData'
 import {ElectricityDataComp} from './ElectricityDataComp'
@@ -32,8 +33,31 @@ export struct EquipListComp{
     }
     .width('96%')
   }
-
 }
+
+@Component
+export struct EquipListComp2{
+  @ObjectLink roomAndElecAppData:roomAndElecListClass
+
+  build() {
+    Column({space:10}){
+      List({space:15}){
+        ForEach(this.roomAndElecAppData.elecAppList,(item:typeElecAppState)=>{
+          ListItem(){
+            ElecAppButton3({item:item})
+          }
+          .width('100%')
+        })
+      }
+      .scrollBar(BarState.Off)
+      .width('100%')
+      .lanes(2,15)
+    }
+    .width('96%')
+  }
+}
+
+
 
 // 添加标题组件
 @Component
@@ -456,6 +480,47 @@ export struct ElecAppButton2{
     .backgroundColor(Color.White)
   }
 }
+
+//下方电器列表按钮
+@Component
+export struct ElecAppButton3{
+  @ObjectLink item: typeElecAppState
+  build() {
+    Column(){
+      Row({space:10}){
+        Image(this.item.state==0?this.item.elecAppList[0].type.typeIconClose:this.item.elecAppList[0].type.typeIconOpen)
+          .width(40)
+        Column(){
+          Text(this.item.elecAppList[0].type.typeName).fontSize(16)
+        }.alignItems(HorizontalAlign.Start)
+      }
+      .margin({top:30})
+      .width('88%')
+      .onClick(() => {
+        console.info(this.item.elecAppList[0].state.toString())
+        console.info("wozaizheli")
+        router.pushUrl({
+          url:this.item.elecAppList[0].type.typeName=='空调'?elecAppRouteToConst3.airConditionRouteTo:
+            this.item.elecAppList[0].type.typeName=='灯光'?elecAppRouteToConst3.lightRouteTo:
+              this.item.elecAppList[0].type.typeName=='窗帘'?elecAppRouteToConst3.curtainRouteTo:
+              elecAppRouteToConst3.lockRouteTo,
+          params:this.item
+        },router.RouterMode.Single,(err) => {
+          if (err) {
+            console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
+            return;
+          }
+          console.info('Invoke pushUrl succeeded.');
+        })
+      })
+    }
+    .width('100%')
+    .height('100')
+    .borderRadius(10)
+    .backgroundColor(Color.White)
+  }
+}
+
 
 //模式详情中的场景列表项
 @Component

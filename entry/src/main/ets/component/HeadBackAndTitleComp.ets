@@ -139,26 +139,94 @@ export struct CloseAndYesButtonComp3{
 
 
 export class airClass{
+  constructor(state: number) {
+    this.state = state
+  }
   name:string="空调"
+  state:number=0
 }
 
 export class curClass{
+  constructor(state: number) {
+    this.state = state
+  }
   name:string="窗帘"
+  state:number=0
 }
 
 export class loClass{
+  constructor(state: number) {
+    this.state = state
+  }
   name:string="门锁"
+  state:number=0
 }
 
 export class liClass{
+  constructor(state: number) {
+    this.state = state
+  }
   name:string="灯光"
+  state:number=0
 }
 
 @Component
 export struct CloseAndYesButtonComp2{
   @State closeAndYesButtonItem:CloseAndYesButtonItem[]=[]
   @State equipName:string=""
-  @State item:airClass=new airClass()
+  @State item:airClass=new airClass(0)
+  build() {
+    Row(){
+      Button({type:ButtonType.Circle,stateEffect: true}){
+        Image(this.closeAndYesButtonItem[0].image).width(30).height(30)
+      }
+      .width(55)
+      .height(55)
+      .backgroundColor(Color.Transparent)
+      .onClick(()=>{
+        console.info("我执行了")
+        router.replaceUrl({
+          url:this.closeAndYesButtonItem[0].routeTo,
+          params:this.equipName
+        },router.RouterMode.Single,(err) => {
+          if (err) {
+            console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
+            return;
+          }
+          console.info('Invoke pushUrl succeeded.');
+        })
+      })
+      Text(this.closeAndYesButtonItem[0].title).fontSize(20)
+      Blank()
+      Button({type:ButtonType.Circle,stateEffect: true}){
+        Image(this.closeAndYesButtonItem[1].image).width(30).height(30)
+      }
+      .width(55)
+      .height(55)
+      .backgroundColor(Color.Transparent)
+      .onClick(()=>{
+        console.info("zheli6")
+        console.info(this.equipName+"gaga")
+        router.pushUrl({
+          url:this.closeAndYesButtonItem[0].routeTo,
+          params:this.item
+        },router.RouterMode.Single,(err) => {
+          if (err) {
+            console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
+            return;
+          }
+          console.info('Invoke pushUrl succeeded.');
+        })
+      })
+    }.width('100%')
+  }
+}
+
+@Component
+export struct CloseAndYesButtonComp4{
+  @State closeAndYesButtonItem:CloseAndYesButtonItem[]=[]
+  @State equipName:string=""
+  @State item:airClass=new airClass(1)
   build() {
     Row(){
       Button({type:ButtonType.Circle,stateEffect: true}){

@@ -234,7 +234,18 @@ export class elecAppRouteToClass2{
   curtainRouteTo:string='pages/CurtainPage2'
   lockRouteTo:string='pages/LockPage2'
 }
+
+@Observed
+export class elecAppRouteToClass3{
+  airConditionRouteTo:string='pages/AirConditionPage3'
+  lightRouteTo:string='pages/LightPage3'
+  curtainRouteTo:string='pages/CurtainPage3'
+  lockRouteTo:string='pages/LockPage3'
+}
+
 export const elecAppRouteToConst2=new elecAppRouteToClass2()
+
+export const elecAppRouteToConst3=new elecAppRouteToClass3()
 
 // 添加空调控制参数接口
 export interface AirConditionerParams {
