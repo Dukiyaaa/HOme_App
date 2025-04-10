@@ -16,6 +16,8 @@ struct LightSpecPage {
   @State sliderColorTemp: number = 0
   @State brightnessBody: equipControl = new equipControl("attribute", "led_setLightness_color", new color_RGBParas(0))
   @State colorTempBody: equipControl = new equipControl("attribute", "led_setLightness_color", new color_RGBParas(0))
+  @State isLightIntensityEnabled: boolean = false
+  @State isMotionSensorEnabled: boolean = false
 
   //灯光参数
   @State lightData: lightClass = new lightClass(0, '', new roomClass(0, ''), elecAppTypeConst.light)
@@ -149,6 +151,69 @@ struct LightSpecPage {
         .padding({ left: 10, right: 10 })
         .backgroundColor(Color.White)
         .borderRadius(10)
+
+        // 智能场景控制
+        ListItem() {
+          Column() {
+            Text('智能场景一键开启')
+              .fontSize(16)
+              .fontWeight(FontWeight.Medium)
+              .margin({ top: 8, bottom: 16 })
+            
+            Row() {
+              Button() {
+                Row() {
+                  Image($r('app.media.light_blue'))
+                    .width(24)
+                    .height(24)
+                    .margin({ right: 8 })
+                    .fillColor(this.isLightIntensityEnabled ? Color.White : '#666666')
+                  Text('光强调节')
+                    .fontSize(14)
+                    .fontColor(this.isLightIntensityEnabled ? Color.White : '#666666')
+                }
+              }
+              .width('45%')
+              .height(40)
+              .backgroundColor(this.isLightIntensityEnabled ? '#5686E1' : '#E8E8E8')
+              .borderRadius(20)
+              .onClick(() => {
+                this.isLightIntensityEnabled = !this.isLightIntensityEnabled;
+                console.info('[Light Page] Light intensity control ' + (this.isLightIntensityEnabled ? 'enabled' : 'disabled'));
+              })
+              
+              Button() {
+                Row() {
+                  Image($r('app.media.person'))
+                    .width(24)
+                    .height(24)
+                    .margin({ right: 8 })
+                    .fillColor(this.isMotionSensorEnabled ? Color.White : '#666666')
+                  Text('人体感应')
+                    .fontSize(14)
+                    .fontColor(this.isMotionSensorEnabled ? Color.White : '#666666')
+                }
+              }
+              .width('45%')
+              .height(40)
+              .backgroundColor(this.isMotionSensorEnabled ? '#5686E1' : '#E8E8E8')
+              .borderRadius(20)
+              .onClick(() => {
+                this.isMotionSensorEnabled = !this.isMotionSensorEnabled;
+                console.info('[Light Page] Motion sensor ' + (this.isMotionSensorEnabled ? 'enabled' : 'disabled'));
+              })
+            }
+            .width('100%')
+            .justifyContent(FlexAlign.SpaceBetween)
+          }
+          .width('100%')
+          .padding(16)
+          .backgroundColor(Color.White)
+          .borderRadius(12)
+        }
+        .shadow(ShadowStyle.OUTER_DEFAULT_SM)
+        .width('100%')
+        .padding({ left: 10, right: 10 })
       }
       .width('100%')
       .height('650')

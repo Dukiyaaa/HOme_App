@@ -11,6 +11,8 @@ struct TemperatureDetailPage {
   @State currentTemp: number = 0
   @State chartImageUrl: string = `${BASE_URL}/chart/temperature`
   private refreshTimer: number = -1
+  @State isAirConditionControlEnabled: boolean = false
+  @State isCurtainControlEnabled: boolean = false
 
   aboutToAppear() {
     console.info('[Temperature Page] Page aboutToAppear, initiating initial data load')
@@ -111,6 +113,29 @@ struct TemperatureDetailPage {
               .width('100%')
               .height(300)
               .margin({ top: 8 })
+
+            Row() {
+              Button('刷新数据')
+                .width('45%')
+                .height(40)
+                .backgroundColor('#5686E1')
+                .borderRadius(20)
+                .onClick(() => {
+                  console.info('[Temperature Page] Refresh button clicked')
+                  this.refreshData()
+                })
+              Button('数据分析')
+                .width('45%')
+                .height(40)
+                .backgroundColor('#5686E1')
+                .borderRadius(20)
+                .onClick(() => {
+                  console.info('[Temperature Page] Data analysis button clicked')
+                })
+            }
+            .width('100%')
+            .margin({ top: 16 })
+            .justifyContent(FlexAlign.SpaceBetween)
           }
           .width('94%')
           .margin({ top: 12 })
@@ -118,28 +143,64 @@ struct TemperatureDetailPage {
           .backgroundColor(Color.White)
           .borderRadius(12)
 
-          Row() {
-            Button('刷新数据')
+          // 智能场景控制
+          Column() {
+            Text('智能场景一键开启')
+              .fontSize(16)
+              .fontWeight(FontWeight.Medium)
+              .margin({ top: 8, bottom: 16 })
+            
+            Row() {
+              Button() {
+                Row() {
+                  Image($r('app.media.airCondition'))
+                    .width(24)
+                    .height(24)
+                    .margin({ right: 8 })
+                    .fillColor(this.isAirConditionControlEnabled ? Color.White : '#666666')
+                  Text('温控空调')
+                    .fontSize(14)
+                    .fontColor(this.isAirConditionControlEnabled ? Color.White : '#666666')
+                }
+              }
               .width('45%')
               .height(40)
-              .backgroundColor('#5686E1')
+              .backgroundColor(this.isAirConditionControlEnabled ? '#5686E1' : '#E8E8E8')
               .borderRadius(20)
               .onClick(() => {
-                console.info('[Temperature Page] Refresh button clicked')
-                this.refreshData()
+                this.isAirConditionControlEnabled = !this.isAirConditionControlEnabled;
+                console.info('[Temperature Page] Air condition control ' + (this.isAirConditionControlEnabled ? 'enabled' : 'disabled'));
               })
-            Button('数据分析')
+              
+              Button() {
+                Row() {
+                  Image($r('app.media.curtain'))
+                    .width(24)
+                    .height(24)
+                    .margin({ right: 8 })
+                    .fillColor(this.isCurtainControlEnabled ? Color.White : '#666666')
+                  Text('温控窗帘')
+                    .fontSize(14)
+                    .fontColor(this.isCurtainControlEnabled ? Color.White : '#666666')
+                }
+              }
               .width('45%')
               .height(40)
-              .backgroundColor('#5686E1')
+              .backgroundColor(this.isCurtainControlEnabled ? '#5686E1' : '#E8E8E8')
               .borderRadius(20)
               .onClick(() => {
-                console.info('[Temperature Page] Data analysis button clicked')
+                this.isCurtainControlEnabled = !this.isCurtainControlEnabled;
+                console.info('[Temperature Page] Curtain control ' + (this.isCurtainControlEnabled ? 'enabled' : 'disabled'));
               })
+            }
+            .width('100%')
+            .justifyContent(FlexAlign.SpaceBetween)
           }
           .width('94%')
-          .margin({ top: 20, bottom: 20 })
-          .justifyContent(FlexAlign.SpaceBetween)
+          .margin({ top: 12, bottom: 20 })
+          .padding(16)
+          .backgroundColor(Color.White)
+          .borderRadius(12)
         }
         .width('100%')
       }

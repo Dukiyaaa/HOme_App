@@ -11,6 +11,8 @@ struct PowerDetailPage {
   @State currentPower: number = 0  // 当前功率（mW）
   @State chartImageUrl: string = `${BASE_URL}/chart/power`
   private refreshTimer: number = -1
+  @State isPowerSavingEnabled: boolean = false
+  @State isPowerAlertEnabled: boolean = false
 
   aboutToAppear() {
     console.info('[Power Page] Page aboutToAppear, initiating initial data load')
@@ -115,6 +117,29 @@ struct PowerDetailPage {
               .width('100%')
               .height(300)
               .margin({ top: 8 })
+
+            Row() {
+              Button('刷新数据')
+                .width('45%')
+                .height(40)
+                .backgroundColor('#5686E1')
+                .borderRadius(20)
+                .onClick(() => {
+                  console.info('[Power Page] Refresh button clicked')
+                  this.refreshData()
+                })
+              Button('数据分析')
+                .width('45%')
+                .height(40)
+                .backgroundColor('#5686E1')
+                .borderRadius(20)
+                .onClick(() => {
+                  console.info('[Power Page] Data analysis button clicked')
+                })
+            }
+            .width('100%')
+            .margin({ top: 16 })
+            .justifyContent(FlexAlign.SpaceBetween)
           }
           .width('94%')
           .margin({ top: 12 })
@@ -122,28 +147,64 @@ struct PowerDetailPage {
           .backgroundColor(Color.White)
           .borderRadius(12)
 
-          Row() {
-            Button('刷新数据')
+          // 智能场景控制
+          Column() {
+            Text('智能场景一键开启')
+              .fontSize(16)
+              .fontWeight(FontWeight.Medium)
+              .margin({ top: 8, bottom: 16 })
+            
+            Row() {
+              Button() {
+                Row() {
+                  Image($r('app.media.elec'))
+                    .width(24)
+                    .height(24)
+                    .margin({ right: 8 })
+                    .fillColor(this.isPowerSavingEnabled ? Color.White : '#666666')
+                  Text('提前断电')
+                    .fontSize(14)
+                    .fontColor(this.isPowerSavingEnabled ? Color.White : '#666666')
+                }
+              }
               .width('45%')
               .height(40)
-              .backgroundColor('#5686E1')
+              .backgroundColor(this.isPowerSavingEnabled ? '#5686E1' : '#E8E8E8')
               .borderRadius(20)
               .onClick(() => {
-                console.info('[Power Page] Refresh button clicked')
-                this.refreshData()
+                this.isPowerSavingEnabled = !this.isPowerSavingEnabled;
+                console.info('[Power Page] Power saving mode ' + (this.isPowerSavingEnabled ? 'enabled' : 'disabled'));
               })
-            Button('数据分析')
+              
+              Button() {
+                Row() {
+                  Image($r('app.media.message_ad'))
+                    .width(24)
+                    .height(24)
+                    .margin({ right: 8 })
+                    .fillColor(this.isPowerAlertEnabled ? Color.White : '#666666')
+                  Text('用电提醒')
+                    .fontSize(14)
+                    .fontColor(this.isPowerAlertEnabled ? Color.White : '#666666')
+                }
+              }
               .width('45%')
               .height(40)
-              .backgroundColor('#5686E1')
+              .backgroundColor(this.isPowerAlertEnabled ? '#5686E1' : '#E8E8E8')
               .borderRadius(20)
               .onClick(() => {
-                console.info('[Power Page] Data analysis button clicked')
+                this.isPowerAlertEnabled = !this.isPowerAlertEnabled;
+                console.info('[Power Page] Power alert ' + (this.isPowerAlertEnabled ? 'enabled' : 'disabled'));
               })
+            }
+            .width('100%')
+            .justifyContent(FlexAlign.SpaceBetween)
           }
           .width('94%')
-          .margin({ top: 20, bottom: 20 })
-          .justifyContent(FlexAlign.SpaceBetween)
+          .margin({ top: 12, bottom: 20 })
+          .padding(16)
+          .backgroundColor(Color.White)
+          .borderRadius(12)
         }
         .width('100%')
       }
