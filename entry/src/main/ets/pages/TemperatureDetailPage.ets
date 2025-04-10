@@ -2,6 +2,7 @@ import { router } from '@kit.ArkUI'
 import { TemperatureAndHumidity } from '../models/RoomData'
 import { LineChart } from '../component/LineChart'
 import { getTemperatureHistory, getLatestTemperature } from '../http/temperatureData'
+import AutomationSceneManager, { AUTO_MODE_TEMP_HUMI_AC, AUTO_MODE_TEMP_HUMI_CURTAIN } from '../models/AutomationSceneManager'
 
 const BASE_URL = 'http://43.155.36.236:5000'
 
@@ -14,6 +15,8 @@ struct TemperatureDetailPage {
   @State isAirConditionControlEnabled: boolean = false
   @State isCurtainControlEnabled: boolean = false
 
+  private sceneManager: AutomationSceneManager = AutomationSceneManager.getInstance()
+
   aboutToAppear() {
     console.info('[Temperature Page] Page aboutToAppear, initiating initial data load')
     // 立即加载数据
@@ -24,6 +27,10 @@ struct TemperatureDetailPage {
       console.info('[Temperature Page] Refresh timer triggered')
       this.refreshData()
     }, 5 * 60 * 1000)
+
+    // 检查场景是否已启用
+    this.isAirConditionControlEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_TEMP_HUMI_AC)
+    this.isCurtainControlEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_TEMP_HUMI_CURTAIN)
   }
 
   aboutToDisappear() {
@@ -167,9 +174,26 @@ struct TemperatureDetailPage {
               .height(40)
               .backgroundColor(this.isAirConditionControlEnabled ? '#5686E1' : '#E8E8E8')
               .borderRadius(20)
-              .onClick(() => {
-                this.isAirConditionControlEnabled = !this.isAirConditionControlEnabled;
-                console.info('[Temperature Page] Air condition control ' + (this.isAirConditionControlEnabled ? 'enabled' : 'disabled'));
+              .onClick(async () => {
+                try {
+                  if (!this.isAirConditionControlEnabled) {
+                    // 启用温控空调场景
+                    const success = await this.sceneManager.enableScene(AUTO_MODE_TEMP_HUMI_AC)
+                    if (success) {
+                      this.isAirConditionControlEnabled = true
+                      console.info('[Temperature Page] Air condition control enabled successfully')
+                    }
+                  } else {
+                    // 禁用温控空调场景
+                    const success = await this.sceneManager.disableScene(AUTO_MODE_TEMP_HUMI_AC)
+                    if (success) {
+                      this.isAirConditionControlEnabled = false
+                      console.info('[Temperature Page] Air condition control disabled successfully')
+                    }
+                  }
+                } catch (error) {
+                  console.error('[Temperature Page] Failed to toggle air condition control:', error)
+                }
               })
               
               Button() {
@@ -188,9 +212,26 @@ struct TemperatureDetailPage {
               .height(40)
               .backgroundColor(this.isCurtainControlEnabled ? '#5686E1' : '#E8E8E8')
               .borderRadius(20)
-              .onClick(() => {
-                this.isCurtainControlEnabled = !this.isCurtainControlEnabled;
-                console.info('[Temperature Page] Curtain control ' + (this.isCurtainControlEnabled ? 'enabled' : 'disabled'));
+              .onClick(async () => {
+                try {
+                  if (!this.isCurtainControlEnabled) {
+                    // 启用温控窗帘场景
+                    const success = await this.sceneManager.enableScene(AUTO_MODE_TEMP_HUMI_CURTAIN)
+                    if (success) {
+                      this.isCurtainControlEnabled = true
+                      console.info('[Temperature Page] Curtain control enabled successfully')
+                    }
+                  } else {
+                    // 禁用温控窗帘场景
+                    const success = await this.sceneManager.disableScene(AUTO_MODE_TEMP_HUMI_CURTAIN)
+                    if (success) {
+                      this.isCurtainControlEnabled = false
+                      console.info('[Temperature Page] Curtain control disabled successfully')
+                    }
+                  }
+                } catch (error) {
+                  console.error('[Temperature Page] Failed to toggle curtain control:', error)
+                }
               })
             }
             .width('100%')

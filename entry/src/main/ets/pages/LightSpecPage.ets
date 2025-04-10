@@ -6,6 +6,7 @@ import { roomClass } from '../models/RoomData'
 import {CloseAndYesButton} from '../models/CloseAndYesButton'
 import {SliderAdjust} from '../component/SliderAdjust'
 import {equipControl, color_RGBParas, postEquipControl} from '../http/basicEquipAdjust'
+import AutomationSceneManager, { AUTO_MODE_MOTION_LIGHT, AUTO_MODE_LIGHT_LIGHTNESS } from '../models/AutomationSceneManager'
 
 @Entry
 @Component
@@ -24,12 +25,18 @@ struct LightSpecPage {
   @State currentBrightness: number = 100
   @State currentColorTemp: number = 50
 
+  private sceneManager: AutomationSceneManager = AutomationSceneManager.getInstance()
+
   aboutToAppear(): void {
     const params = router.getParams()
     if (params) {
       this.lightData = params as lightClass
       this.currentBrightness = 100  // 初始亮度
       this.currentColorTemp = 50    // 初始色温
+      
+      // 检查场景是否已启用
+      this.isLightIntensityEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_LIGHT_LIGHTNESS)
+      this.isMotionSensorEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_MOTION_LIGHT)
     }
   }
 
@@ -177,9 +184,26 @@ struct LightSpecPage {
               .height(40)
               .backgroundColor(this.isLightIntensityEnabled ? '#5686E1' : '#E8E8E8')
               .borderRadius(20)
-              .onClick(() => {
-                this.isLightIntensityEnabled = !this.isLightIntensityEnabled;
-                console.info('[Light Page] Light intensity control ' + (this.isLightIntensityEnabled ? 'enabled' : 'disabled'));
+              .onClick(async () => {
+                try {
+                  if (!this.isLightIntensityEnabled) {
+                    // 启用光强调节场景
+                    const success = await this.sceneManager.enableScene(AUTO_MODE_LIGHT_LIGHTNESS)
+                    if (success) {
+                      this.isLightIntensityEnabled = true
+                      console.info('[Light Page] Light intensity control enabled successfully')
+                    }
+                  } else {
+                    // 禁用光强调节场景
+                    const success = await this.sceneManager.disableScene(AUTO_MODE_LIGHT_LIGHTNESS)
+                    if (success) {
+                      this.isLightIntensityEnabled = false
+                      console.info('[Light Page] Light intensity control disabled successfully')
+                    }
+                  }
+                } catch (error) {
+                  console.error('[Light Page] Failed to toggle light intensity control:', error)
+                }
               })
               
               Button() {
@@ -198,9 +222,26 @@ struct LightSpecPage {
               .height(40)
               .backgroundColor(this.isMotionSensorEnabled ? '#5686E1' : '#E8E8E8')
               .borderRadius(20)
-              .onClick(() => {
-                this.isMotionSensorEnabled = !this.isMotionSensorEnabled;
-                console.info('[Light Page] Motion sensor ' + (this.isMotionSensorEnabled ? 'enabled' : 'disabled'));
+              .onClick(async () => {
+                try {
+                  if (!this.isMotionSensorEnabled) {
+                    // 启用人体感应场景
+                    const success = await this.sceneManager.enableScene(AUTO_MODE_MOTION_LIGHT)
+                    if (success) {
+                      this.isMotionSensorEnabled = true
+                      console.info('[Light Page] Motion sensor enabled successfully')
+                    }
+                  } else {
+                    // 禁用人体感应场景
+                    const success = await this.sceneManager.disableScene(AUTO_MODE_MOTION_LIGHT)
+                    if (success) {
+                      this.isMotionSensorEnabled = false
+                      console.info('[Light Page] Motion sensor disabled successfully')
+                    }
+                  }
+                } catch (error) {
+                  console.error('[Light Page] Failed to toggle motion sensor:', error)
+                }
               })
             }
             .width('100%')

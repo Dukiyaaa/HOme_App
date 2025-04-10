@@ -2,6 +2,7 @@ import { router } from '@kit.ArkUI'
 import { LineChart } from '../component/LineChart'
 import { getLatestElectricityData } from '../http/electricityData'
 import { ElectricityData } from '../models/ElectricityData'
+import AutomationSceneManager, { AUTO_MODE_ENERGY_SAVER, AUTO_MODE_LOW_VOLTAGE_PROTECT } from '../models/AutomationSceneManager'
 
 const BASE_URL = 'http://43.155.36.236:5000'
 
@@ -14,6 +15,8 @@ struct PowerDetailPage {
   @State isPowerSavingEnabled: boolean = false
   @State isPowerAlertEnabled: boolean = false
 
+  private sceneManager: AutomationSceneManager = AutomationSceneManager.getInstance()
+
   aboutToAppear() {
     console.info('[Power Page] Page aboutToAppear, initiating initial data load')
     // 立即加载数据
@@ -24,6 +27,10 @@ struct PowerDetailPage {
       console.info('[Power Page] Refresh timer triggered')
       this.refreshData()
     }, 5 * 60 * 1000)
+
+    // 检查场景是否已启用
+    this.isPowerSavingEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_ENERGY_SAVER)
+    this.isPowerAlertEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_LOW_VOLTAGE_PROTECT)
   }
 
   aboutToDisappear() {
@@ -171,9 +178,26 @@ struct PowerDetailPage {
               .height(40)
               .backgroundColor(this.isPowerSavingEnabled ? '#5686E1' : '#E8E8E8')
               .borderRadius(20)
-              .onClick(() => {
-                this.isPowerSavingEnabled = !this.isPowerSavingEnabled;
-                console.info('[Power Page] Power saving mode ' + (this.isPowerSavingEnabled ? 'enabled' : 'disabled'));
+              .onClick(async () => {
+                try {
+                  if (!this.isPowerSavingEnabled) {
+                    // 启用节能场景
+                    const success = await this.sceneManager.enableScene(AUTO_MODE_ENERGY_SAVER)
+                    if (success) {
+                      this.isPowerSavingEnabled = true
+                      console.info('[Power Page] Power saving mode enabled successfully')
+                    }
+                  } else {
+                    // 禁用节能场景
+                    const success = await this.sceneManager.disableScene(AUTO_MODE_ENERGY_SAVER)
+                    if (success) {
+                      this.isPowerSavingEnabled = false
+                      console.info('[Power Page] Power saving mode disabled successfully')
+                    }
+                  }
+                } catch (error) {
+                  console.error('[Power Page] Failed to toggle power saving mode:', error)
+                }
               })
               
               Button() {
@@ -192,9 +216,26 @@ struct PowerDetailPage {
               .height(40)
               .backgroundColor(this.isPowerAlertEnabled ? '#5686E1' : '#E8E8E8')
               .borderRadius(20)
-              .onClick(() => {
-                this.isPowerAlertEnabled = !this.isPowerAlertEnabled;
-                console.info('[Power Page] Power alert ' + (this.isPowerAlertEnabled ? 'enabled' : 'disabled'));
+              .onClick(async () => {
+                try {
+                  if (!this.isPowerAlertEnabled) {
+                    // 启用电压保护场景
+                    const success = await this.sceneManager.enableScene(AUTO_MODE_LOW_VOLTAGE_PROTECT)
+                    if (success) {
+                      this.isPowerAlertEnabled = true
+                      console.info('[Power Page] Power alert enabled successfully')
+                    }
+                  } else {
+                    // 禁用电压保护场景
+                    const success = await this.sceneManager.disableScene(AUTO_MODE_LOW_VOLTAGE_PROTECT)
+                    if (success) {
+                      this.isPowerAlertEnabled = false
+                      console.info('[Power Page] Power alert disabled successfully')
+                    }
+                  }
+                } catch (error) {
+                  console.error('[Power Page] Failed to toggle power alert:', error)
+                }
               })
             }
             .width('100%')
