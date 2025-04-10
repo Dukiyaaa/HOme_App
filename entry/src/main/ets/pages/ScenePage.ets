@@ -99,7 +99,11 @@ export struct ScenePage {
                                   Image($r('app.media.Scene_blue'))
                                     .width(40)
                                   Text(item.name)
-                                }
+                                  Blank()
+                                  Toggle({ type: ToggleType.Switch, isOn: true })
+                                    .height(30)
+                                    .width(50)
+                                }.width('95%')
                               }
                               .align(Alignment.Start)
                               .borderRadius(1)

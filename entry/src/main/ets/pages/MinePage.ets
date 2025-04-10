@@ -23,7 +23,7 @@ class DividerTmp {
 export struct MinePage {
   @State message: string = 'Hello World';
   //头像
-  @State touxiang:Resource=$r('app.media.touxiang')
+  @State touxiang:Resource=$r('app.media.avator')
   //用户名
   @State username:string='海阔天空'
   //家庭成员
@@ -52,14 +52,14 @@ export struct MinePage {
             .fontSize(10)
             .height(25)
             .padding(7)
-            .backgroundColor(Color.Gray)
+            .backgroundColor('#5686E1')
             .borderRadius({topLeft:'50%',bottomLeft:'50%',topRight:0,bottomRight:0})
-          Text('|').fontSize(15).height(25).backgroundColor(Color.Gray)
+          Text('|').fontSize(15).height(25).backgroundColor('#5686E1')
           Button(this.equipNum.toString()+'个设备',{type:ButtonType.Normal})
             .fontSize(10)
             .height(25)
             .padding(7)
-            .backgroundColor(Color.Gray)
+            .backgroundColor('#5686E1')
             .borderRadius({topLeft:0,bottomLeft:0,topRight:'50%',bottomRight:'50%'})
         }
         .margin({left:10})
