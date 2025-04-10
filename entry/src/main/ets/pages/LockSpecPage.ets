@@ -31,8 +31,34 @@ struct LockSpecPage {
         Blank()
           .height(30)
         List({space:20}){
+          // 添加人脸识别入口按钮
+          ListItem() {
+            Button({ type: ButtonType.Normal, stateEffect: true }) {
+              Row() {
+                Image($r('app.media.lock_blue'))
+                  .width(24)
+                  .height(24)
+                  .margin({ right: 8 })
+                Text('人脸识别')
+                  .fontSize(16)
+                  .fontColor('#333')
+                Blank()
+                Image($r('app.media.inter'))
+                  .width(16)
+                  .height(16)
+              }
+              .width('100%')
+              .padding(12)
+            }
+            .onClick(() => {
+              console.info('点击了人脸识别入口');
+            })
+            .width('100%')
+            .backgroundColor(Color.White)
+            .borderRadius(8)
+          }
         }
-        .width('100%')
+        .width('94%')
         CloseAndOpenButton({
           stateFromParent: this.lockData.state,
           updateState: {

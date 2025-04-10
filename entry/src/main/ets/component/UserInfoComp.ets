@@ -9,7 +9,7 @@ export struct UserInfoComp{
     Row({space:10}){
       //用户头像
       Button(){
-        Image(this.userData.userImage).width(35).height(35)
+        Image($r('app.media.avator')).width(35).height(35)
       }
       .width(42).height(42).backgroundColor(Color.Transparent)
       //用户名称
@@ -33,11 +33,9 @@ export struct UserInfoComp{
         })
       })
       .backgroundColor(Color.Transparent)
-
     }
     .margin({top:10})
     .height(30)
     .width('96%')
   }
-
 }

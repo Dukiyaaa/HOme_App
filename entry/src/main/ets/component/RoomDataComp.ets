@@ -9,6 +9,7 @@ import {
   lockClass,
   lightClass} from '../models/EquipData'
 import {roomAndElecListClass,TemperatureAndHumidity} from '../models/RoomData'
+import {ElectricityDataComp} from './ElectricityDataComp'
 
 @Component
 export struct EquipListComp{
@@ -33,6 +34,40 @@ export struct EquipListComp{
 
 }
 
+// 添加标题组件
+@Component
+struct SectionTitle {
+  @Prop title: string
+
+  build() {
+    Row() {
+      Row() {
+        Divider()
+          .vertical(true)
+          .height(14)
+          .width(2)
+          .color('#5686E1')
+          .margin({ right: 6 })
+        Text(this.title)
+          .fontSize(13)
+          .fontWeight(FontWeight.Regular)
+          .fontColor('#333')
+      }
+      Blank()
+      Divider()
+        .height(1)
+        .width('70%')
+        .color('#E8E8E8')
+        .opacity(0.6)
+    }
+    .width('94%')
+    .margin({ top: 8, bottom: 6 })
+    .padding({ left: 10, right: 10, top: 6, bottom: 6 })
+    .backgroundColor('#E6E8F1')
+    .borderRadius(6)
+  }
+}
+
 //房间页面组件
 @Component
 export struct RoomDataComp{
@@ -42,133 +77,194 @@ export struct RoomDataComp{
 
   build() {
     TabContent(){
-      Column({space:10}){
-        //房间温湿度数据
-        Row({space:15}){
-          Button({type:ButtonType.Normal}){
-            Row(){
-              Image($r('app.media.temperature_set')).width(30)
-              Text('温度')
-                .fontSize(10)
-                .fontColor(Color.Gray)
-              Text(this.temperatureAndHumidityData.temperature?.toString()+'°C')
-                .fontColor('#5686E1')
-                .fontSize(25)
+      Scroll() {
+        Column({space:10}){
+          // 传感器数据监测标题
+          SectionTitle({ title: '传感器数据监测' })
+
+          //房间温湿度和电流电压数据
+          Row({space:8}){
+            // 温度显示
+            Button({type:ButtonType.Normal}){
+              Row(){
+                Image($r('app.media.temperature_set')).width(20)
+                Column() {
+                  Text('温度')
+                    .fontSize(12)
+                    .fontColor(Color.Gray)
+                  Row() {
+                    Text(this.temperatureAndHumidityData.temperature?.toString())
+                      .fontColor('#5686E1')
+                      .fontSize(18)
+                    Text('°C')
+                      .fontSize(10)
+                      .fontColor('#5686E1')
+                      .margin({left: 2})
+                  }
+                }
+                .alignItems(HorizontalAlign.Start)
+                .margin({left: 8})
+              }
+              .width('100%')
+              .height(45)
+              .justifyContent(FlexAlign.Center)
             }
-            .padding({left:10,right:10,top:5,bottom:5})
-            .alignItems(VerticalAlign.Bottom)
+            .backgroundColor(Color.White)
+            .borderRadius(8)
+            .width('32%')
+
+            // 湿度显示
+            Button({type:ButtonType.Normal}){
+              Row(){
+                Image($r('app.media.humidity2')).width(20)
+                Column() {
+                  Text('湿度')
+                    .fontSize(12)
+                    .fontColor(Color.Gray)
+                  Row() {
+                    Text(this.temperatureAndHumidityData.humidity?.toString())
+                      .fontColor('#5686E1')
+                      .fontSize(18)
+                    Text('%')
+                      .fontSize(10)
+                      .fontColor('#5686E1')
+                      .margin({left: 2})
+                  }
+                }
+                .alignItems(HorizontalAlign.Start)
+                .margin({left: 8})
+              }
+              .width('100%')
+              .height(45)
+              .justifyContent(FlexAlign.Center)
+            }
+            .backgroundColor(Color.White)
+            .borderRadius(8)
+            .width('32%')
+
+            // 电量显示
+            Button({type:ButtonType.Normal}){
+              Row(){
+                Image($r('app.media.elec')).width(20)
+                Column() {
+                  Text('用电')
+                    .fontSize(12)
+                    .fontColor(Color.Gray)
+                  Row() {
+                    Text('4.07')
+                      .fontColor('#5686E1')
+                      .fontSize(18)
+                    Text('mW')
+                      .fontSize(10)
+                      .fontColor('#5686E1')
+                      .margin({left: 2})
+                  }
+                }
+                .alignItems(HorizontalAlign.Start)
+                .margin({left: 8})
+              }
+              .width('100%')
+              .height(45)
+              .justifyContent(FlexAlign.Center)
+            }
+            .backgroundColor(Color.White)
+            .borderRadius(8)
+            .width('32%')
           }
-          .onClick(()=>{
+          .width('94%')
+          .justifyContent(FlexAlign.SpaceBetween)
+
+          // 常用场景标题
+          SectionTitle({ title: '常用场景' })
+
+          //上方场景列表部分
+          if (this.roomAndElecAppData.room.roomId==0){
+            Scroll(){
+              Row({space:15}){
+                ForEach(this.sceneDataList.sceneDataList,(item:SceneClass)=>{
+                  SceneButton({
+                    sceneData:item
+                  })
+                },(item:SceneClass)=>item.sceneId.toString())
+              }.height(80)
+            }
+            .width('94%')
+            .scrollable(ScrollDirection.Horizontal)
+            .scrollBar(BarState.Off)
+          }
+
+          // 监控画面标题
+          SectionTitle({ title: '实时监控' })
+
+          //监控部分
+          Column() {
+            Stack() {
+              Image($r('app.media.monitor_preview'))
+                .width('100%')
+                .height('100%')
+                .objectFit(ImageFit.Cover)
+                .borderRadius(10)
+              
+              Column() {
+                Row() {
+                  Text('监控画面')
+                    .fontSize(16)
+                    .fontColor('#FFFFFF')
+                  Blank()
+                  Image($r('app.media.camera'))
+                    .width(24)
+                    .height(24)
+                }
+                .width('100%')
+                .padding(12)
+                .backgroundColor('rgba(0, 0, 0, 0.3)')
+              }
+              .width('100%')
+              .position({ y: 0 })
+            }
+          }
+          .width('94%')
+          .height(200)
+          .backgroundColor('#f1f3f5')
+          .borderRadius(10)
+          .shadow(ShadowStyle.OUTER_DEFAULT_SM)
+          .onClick(() => {
             router.pushUrl({
-              url:"pages/AITemperatureAndHumidityPage",
-              params: [  {
-                title:'温湿度智能监测',
-                image:$r('app.media.back'),
-                routeTo:'pages/Index'
-              }]
-            },router.RouterMode.Single,(err) => {
+              url: 'pages/MonitorPage'
+            }, router.RouterMode.Single, (err) => {
               if (err) {
-                console.error(`Invoke pushUrl failed, code is ${err.code}, message is ${err.message}`);
+                console.error(`跳转失败: ${err.code}, ${err.message}`);
                 return;
               }
-              console.info('Invoke pushUrl succeeded.');
-            })
+              console.info('跳转到监控页面成功');
+            });
           })
-          .backgroundColor(Color.White)
-          .height(35)
-          .borderRadius('50%')
-          Button({type:ButtonType.Normal}){
-            Row(){
-              Image($r('app.media.humidity2')).width(30)
-              Text('湿度')
-                .fontSize(10)
-                .fontColor(Color.Gray)
-              Text(this.temperatureAndHumidityData.humidity?.toString()+'%')
-                .fontColor('#5686E1')
-                .fontSize(25)
+
+          // 家居控制标题
+          SectionTitle({ title: '家居控制' })
+
+          //下方电器列表部分
+          Column({space:10}){
+            List({space:15}){
+              ForEach(this.roomAndElecAppData.elecAppList,(item:typeElecAppState)=>{
+                ListItem(){
+                  ElecAppButton({item:item})
+                }
+                .width('100%')
+              })
             }
-            .padding({left:10,right:10,top:5,bottom:5})
-            .alignItems(VerticalAlign.Bottom)
-          }
-          .backgroundColor(Color.White)
-          .height(35)
-          .borderRadius('50%')
-        }
-        .width('96%')
-        //上方场景列表部分
-        if (this.roomAndElecAppData.room.roomId==0){
-          Scroll(){
-            Row({space:15}){
-              ForEach(this.sceneDataList.sceneDataList,(item:SceneClass)=>{
-                SceneButton({
-                  sceneData:item
-                })
-              },(item:SceneClass)=>item.sceneId.toString())
-            }.height(80)
-          }
-          .width('96%')
-          .scrollable(ScrollDirection.Horizontal)
-          .scrollBar(BarState.Off)
-        }
-        //监控部分
-        Column() {
-          Stack() {
-            Image($r('app.media.monitor_preview'))
-              .width('100%')
-              .height('100%')
-              .objectFit(ImageFit.Cover)
-              .borderRadius(10)
-            
-            Column() {
-              Row() {
-                Text('监控画面')
-                  .fontSize(16)
-                  .fontColor('#FFFFFF')
-                Blank()
-                Image($r('app.media.camera'))
-                  .width(24)
-                  .height(24)
-              }
-              .width('100%')
-              .padding(12)
-              .backgroundColor('rgba(0, 0, 0, 0.3)')
-            }
+            .scrollBar(BarState.Off)
             .width('100%')
-            .position({ y: 0 })
+            .lanes(2,15)
           }
+          .width('94%')
+          .margin({ bottom: 80 })
         }
-        .width('96%')
-        .height(200)
-        .backgroundColor('#f1f3f5')
-        .borderRadius(10)
-        .shadow(ShadowStyle.OUTER_DEFAULT_SM)
-        .onClick(() => {
-          router.pushUrl({
-            url: 'pages/MonitorPage'
-          }, router.RouterMode.Single, (err) => {
-            if (err) {
-              console.error(`跳转失败: ${err.code}, ${err.message}`);
-              return;
-            }
-            console.info('跳转到监控页面成功');
-          });
-        })
-        //下方电器列表部分
-        Column({space:10}){
-          List({space:15}){
-            ForEach(this.roomAndElecAppData.elecAppList,(item:typeElecAppState)=>{
-              ListItem(){
-                ElecAppButton({item:item})
-              }
-              .width('100%')
-            })
-          }
-          .scrollBar(BarState.Off)
-          .width('100%')
-          .lanes(2,15)
-        }
-        .width('96%')
-      }.height('100%')
+      }
+      .scrollBar(BarState.Auto)
+      .edgeEffect(EdgeEffect.Spring)
+      .width('100%')
+      .height('100%')
     }
     .tabBar(this.roomAndElecAppData.room.roomTitle)
   }

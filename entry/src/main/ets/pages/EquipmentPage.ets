@@ -12,7 +12,7 @@ import {RoomDataComp,} from '../component/RoomDataComp'
 
 @Entry
 @Component
-export struct EquipmentPage {
+struct EquipmentPage {
 
   //场景数据
   @State tempSceneList:SceneClassList=new SceneClassList([new SceneClass(
@@ -94,3 +94,5 @@ export struct EquipmentPage {
     }.height('100%')
   }
 }
+
+export { EquipmentPage }
