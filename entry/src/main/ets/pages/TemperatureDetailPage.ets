@@ -19,10 +19,10 @@ struct TemperatureDetailPage {
     // 获取初始数据
     this.getTempHistory()
     
-    // 设置定时刷新
+    // 设置定时刷新，从10秒改为30秒
     this.refreshTimer = setInterval(() => {
       this.getTempHistory()
-    }, 10000)
+    }, 30000) // 修改为30秒
   }
 
   aboutToDisappear() {
