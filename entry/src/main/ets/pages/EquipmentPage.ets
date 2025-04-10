@@ -9,6 +9,7 @@ import {UserData} from '../models/UserData'
 import {roomClass,roomAndElecListClass,TemperatureAndHumidity} from '../models/RoomData'
 import {UserInfoComp} from '../component/UserInfoComp'
 import {RoomDataComp,} from '../component/RoomDataComp'
+import { getLatestTemperatureHumidity } from '../http/temperatureAndHumidity'
 
 @Entry
 @Component
@@ -74,6 +75,38 @@ struct EquipmentPage {
   @State userData:UserData=new UserData()
   //温度湿度数据
   @State temperatureAndHumdityData:TemperatureAndHumidity=new TemperatureAndHumidity(new roomClass(0,'客厅'),20,50)
+
+  // 定时器ID
+  private timerId: number = -1
+
+  aboutToAppear() {
+    // 页面加载时立即获取一次数据
+    this.fetchTemperatureHumidity()
+    // 设置定时器,每30秒获取一次数据
+    this.timerId = setInterval(() => {
+      this.fetchTemperatureHumidity()
+    }, 30000)
+  }
+
+  aboutToDisappear() {
+    // 页面销毁时清除定时器
+    if (this.timerId !== -1) {
+      clearInterval(this.timerId)
+    }
+  }
+
+  // 获取温湿度数据
+  private async fetchTemperatureHumidity() {
+    try {
+      const response = await getLatestTemperatureHumidity()
+      if (response.status === 'success' && response.latest) {
+        this.temperatureAndHumdityData.temperature = response.latest.temperature_indoor
+        this.temperatureAndHumdityData.humidity = response.latest.humidity_indoor
+      }
+    } catch (error) {
+      console.error('获取温湿度数据失败:', error)
+    }
+  }
 
   build() {
     Column(){
