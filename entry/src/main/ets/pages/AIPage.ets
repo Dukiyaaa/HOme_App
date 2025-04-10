@@ -3,6 +3,8 @@
 // =====================================================
 import { chatPop } from '../models/ChatPop'
 import { http } from '@kit.NetworkKit'
+import { UserInfoComp } from '../component/UserInfoComp'
+import { UserData } from '../models/UserData'
 
 // =====================================================
 // 🧾 模块二：类型接口定义
@@ -27,6 +29,8 @@ export struct AIPage {
   @State chatMessages: chatPop[] = []
   @State inputMessage: string = ''
   @State nowId: number = 0
+  //用户信息数据
+  @State userData:UserData=new UserData()
 
   // =====================================================
   // 🏗️ 页面构建函数 build()
@@ -35,27 +39,8 @@ export struct AIPage {
     Column() {
 
       // 🧱 顶部区域
-      Row({ space: 10 }) {
-        Button() {
-          Image(this.touxiang).width(35).height(35)
-        }
-        .width(42).height(42)
-        .backgroundColor(Color.Transparent)
-
-        Text(this.username)
-        Blank()
-
-        Button('联系客服')
-          .margin({ right: 10 })
-          .backgroundColor('5686E1')
-
-        Button() {
-          Image($r('app.media.add')).width(30)
-        }
-        .backgroundColor(Color.Transparent)
-      }
-      .height('10%')
-      .width('100%')
+      //用户信息栏
+      UserInfoComp({userData:this.userData})
 
       // 💬 聊天内容区域
       Stack({ alignContent: Alignment.Center }) {
@@ -168,11 +153,11 @@ export struct AIPage {
         .alignItems(VerticalAlign.Center)
         .position({ bottom: 0 })
       }
-      .width('100%')
+      .width('95%')
       .height('90%')
 
     }
-    .width('95%')
+    .width('100%')
     .height('100%')
   }
 }

@@ -25,7 +25,16 @@ export class elecAppTypeClass {
   curtain: typeClass = new typeClass(2,'窗帘', $r('app.media.curtain_blue'), $r('app.media.curtain_gray'))
   lock: typeClass = new typeClass(3,'门锁', $r('app.media.lock_blue'), $r('app.media.lock_gray'))
 }
+
+export class elecAppTypeClass2 {
+  airCondition: typeClass = new typeClass(0,'空调', $r('app.media.dian'), $r('app.media.dian'))
+  light: typeClass = new typeClass(1,'灯光', $r('app.media.notice'), $r('app.media.notice'))
+  curtain: typeClass = new typeClass(2,'窗帘', $r('app.media.time_set'), $r('app.media.time_set'))
+  lock: typeClass = new typeClass(3,'门锁', $r('app.media.jiankong'), $r('app.media.jiankong'))
+}
+
 export const elecAppTypeConst: elecAppTypeClass = new elecAppTypeClass()
+export const elecAppTypeConst2: elecAppTypeClass2 = new elecAppTypeClass2()
 export const elecAppTypeArrayConst:typeClass[]=[
   new typeClass(0,'空调', $r('app.media.airCondition_blue'), $r('app.media.airCondition_gray')),
   new typeClass(1,'灯光', $r('app.media.light_blue'), $r('app.media.liight_gray')),

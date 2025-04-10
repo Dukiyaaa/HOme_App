@@ -2,6 +2,7 @@ import {airConditionModeConst,
   airConditionWindSpeedConst,
   airConditionWindWayConst,
   elecAppTypeConst,
+  elecAppTypeConst2,
   typeClass} from './EquipData'
 export class SceneButtonItem{
   index:number=0
@@ -266,7 +267,8 @@ export class ModeClass{
 }
 
 export const TempModeListConst:ModeClass[]=
-  [new ModeClass(0,'日常生活',new SceneClassList([new SceneClass(
+  [
+    new ModeClass(0,'日常生活',new SceneClassList([new SceneClass(
     0,
     '回家模式',
     $r('app.media.leave_home'),
@@ -290,7 +292,7 @@ export const TempModeListConst:ModeClass[]=
       airConditionModeConst.auto,
       airConditionWindSpeedConst.low,
       airConditionWindWayConst.upAndDown,
-      0)])),new SceneClass(2,
+      0)],undefined,[new lockAction(0, '客厅空调', elecAppTypeConst.lock, 0)])),new SceneClass(2,
     '模式',
     $r('app.media.leave_home'),
     $r('app.media.leave_home_close'),
@@ -317,25 +319,23 @@ export const TempModeListConst:ModeClass[]=
       airConditionWindSpeedConst.low,
       airConditionWindWayConst.upAndDown,
       0)]))])),
-  new ModeClass(1,'节能模式',new SceneClassList([new SceneClass(
+    new ModeClass(1,'节能模式',new SceneClassList([new SceneClass(
     0,
-    '回家模式',
+    '提前断电',
     $r('app.media.leave_home'),
     $r('app.media.leave_home_close'),
     0,
     new elecAppAction(
-      [new airConditionAction(0, '客厅空调', elecAppTypeConst.airCondition, 0, 0, airConditionModeConst.auto, airConditionWindSpeedConst.low, airConditionWindWayConst.upAndDown, 0)],
+      [new airConditionAction(0, '客厅空调', elecAppTypeConst2.airCondition, 0, 0, airConditionModeConst.auto, airConditionWindSpeedConst.low, airConditionWindWayConst.upAndDown, 0)],
       undefined,
-      [new curtainAction(0, '客厅空调', elecAppTypeConst.curtain, 0)],
-      [new lockAction(0, '客厅空调', elecAppTypeConst.lock, 0)]
     )),new SceneClass(1,
-    '离家模式',
+    '用电提醒',
     $r('app.media.leave_home'),
     $r('app.media.leave_home_close'),
     0,
     new elecAppAction([new airConditionAction(0,
       '客厅空调',
-      elecAppTypeConst.airCondition,
+      elecAppTypeConst2.light,
       0,
       0,
       airConditionModeConst.auto,
@@ -370,23 +370,22 @@ export const TempModeListConst:ModeClass[]=
       0)]))])),
     new ModeClass(2,'独居女性模式',new SceneClassList([new SceneClass(
       0,
-      '回家模式',
-      $r('app.media.leave_home'),
-      $r('app.media.leave_home_close'),
+      '门窗打开提醒',
+      $r('app.media.menopen'),
+      $r('app.media.menopen'),
       0,
       new elecAppAction(
-        [new airConditionAction(0, '客厅空调', elecAppTypeConst.airCondition, 0, 0, airConditionModeConst.auto, airConditionWindSpeedConst.low, airConditionWindWayConst.upAndDown, 0)],
+        [new airConditionAction(0, '客厅空调', elecAppTypeConst.lock, 0, 0, airConditionModeConst.auto, airConditionWindSpeedConst.low, airConditionWindWayConst.upAndDown, 0)],
         undefined,
-        [new curtainAction(0, '客厅空调', elecAppTypeConst.curtain, 0)],
-        [new lockAction(0, '客厅空调', elecAppTypeConst.lock, 0)]
+        [new curtainAction(0, '客厅空调', elecAppTypeConst2.light, 0)]
       )),new SceneClass(1,
-      '离家模式',
-      $r('app.media.leave_home'),
-      $r('app.media.leave_home_close'),
+      '经期跟踪',
+      $r('app.media.jingqi2'),
+      $r('app.media.jingqi2'),
       0,
       new elecAppAction([new airConditionAction(0,
         '客厅空调',
-        elecAppTypeConst.airCondition,
+        elecAppTypeConst2.light,
         0,
         0,
         airConditionModeConst.auto,
@@ -419,25 +418,24 @@ export const TempModeListConst:ModeClass[]=
         airConditionWindSpeedConst.low,
         airConditionWindWayConst.upAndDown,
         0)]))])),
-new ModeClass(3,'老人关怀模式',new SceneClassList([new SceneClass(
+    new ModeClass(3,'老人关怀模式',new SceneClassList([new SceneClass(
   0,
-  '回家模式',
-  $r('app.media.leave_home'),
-  $r('app.media.leave_home_close'),
+  '跌倒检测',
+  $r('app.media.diedao'),
+  $r('app.media.diedao'),
   0,
   new elecAppAction(
-    [new airConditionAction(0, '客厅空调', elecAppTypeConst.airCondition, 0, 0, airConditionModeConst.auto, airConditionWindSpeedConst.low, airConditionWindWayConst.upAndDown, 0)],
+    [new airConditionAction(0, '客厅空调', elecAppTypeConst.lock, 0, 0, airConditionModeConst.auto, airConditionWindSpeedConst.low, airConditionWindWayConst.upAndDown, 0)],
     undefined,
-    [new curtainAction(0, '客厅空调', elecAppTypeConst.curtain, 0)],
-    [new lockAction(0, '客厅空调', elecAppTypeConst.lock, 0)]
+    [new curtainAction(0, '客厅空调', elecAppTypeConst2.curtain, 0)],
   )),new SceneClass(1,
-  '离家模式',
-  $r('app.media.leave_home'),
-  $r('app.media.leave_home_close'),
+  '定时服药',
+  $r('app.media.yaowan'),
+  $r('app.media.yaowan'),
   0,
   new elecAppAction([new airConditionAction(0,
     '客厅空调',
-    elecAppTypeConst.airCondition,
+    elecAppTypeConst2.curtain,
     0,
     0,
     airConditionModeConst.auto,
@@ -469,4 +467,5 @@ new ModeClass(3,'老人关怀模式',new SceneClassList([new SceneClass(
     airConditionModeConst.auto,
     airConditionWindSpeedConst.low,
     airConditionWindWayConst.upAndDown,
-    0)]))]))]
+    0)]))]))
+  ]
