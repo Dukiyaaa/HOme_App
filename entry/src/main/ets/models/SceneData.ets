@@ -374,7 +374,7 @@ export const TempModeListConst:ModeClass[]=
       0)]))])),
     new ModeClass(2,'独居女性模式',new SceneClassList([new SceneClass(
       0,
-      '门窗打开提醒',
+      '开门提醒',
       $r('app.media.menopen'),
       $r('app.media.menopen'),
       0,
