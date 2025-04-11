@@ -28,15 +28,35 @@ struct LightSpecPage {
   private sceneManager: AutomationSceneManager = AutomationSceneManager.getInstance()
 
   aboutToAppear(): void {
+    console.info('[Light Page] Page aboutToAppear starting...')
+    
     const params = router.getParams()
     if (params) {
       this.lightData = params as lightClass
       this.currentBrightness = 100  // 初始亮度
       this.currentColorTemp = 50    // 初始色温
       
-      // 检查场景是否已启用
-      this.isLightIntensityEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_LIGHT_LIGHTNESS)
-      this.isMotionSensorEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_MOTION_LIGHT)
+      // 获取并更新场景状态
+      this.updateSceneStates().catch(() => {
+        console.error('[Light Page] Error updating initial scene states')
+      })
+    }
+  }
+
+  // 更新场景状态
+  private async updateSceneStates(): Promise<void> {
+    try {
+      const success = await this.sceneManager.fetchAllScenes();
+      if (success) {
+        this.isLightIntensityEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_LIGHT_LIGHTNESS);
+        this.isMotionSensorEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_MOTION_LIGHT);
+        console.info('[Light Page] Scene states updated:', {
+          lightIntensity: this.isLightIntensityEnabled,
+          motionSensor: this.isMotionSensorEnabled
+        });
+      }
+    } catch (error) {
+      console.error('[Light Page] Error updating scene states:', error);
     }
   }
 

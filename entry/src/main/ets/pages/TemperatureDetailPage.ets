@@ -2,7 +2,14 @@ import { router } from '@kit.ArkUI'
 import { TemperatureAndHumidity } from '../models/RoomData'
 import { LineChart } from '../component/LineChart'
 import { getTemperatureHistory, getLatestTemperature } from '../http/temperatureData'
-import AutomationSceneManager, { AUTO_MODE_TEMP_HUMI_AC, AUTO_MODE_TEMP_HUMI_CURTAIN } from '../models/AutomationSceneManager'
+import AutomationSceneManager, { AUTO_MODE_TEMP_AC, AUTO_MODE_TEMP_CURTAIN } from '../models/AutomationSceneManager'
+import { CloseAndOpenButton } from '../component/CloseAndOpenButton'
+import { HeadBackAndTitleComp } from '../component/HeadBackAndTitleComp'
+import { airConditionClass, elecAppTypeConst } from '../models/EquipData'
+import { roomClass } from '../models/RoomData'
+import { CloseAndYesButton } from '../models/CloseAndYesButton'
+import { SliderAdjust } from '../component/SliderAdjust'
+import { equipControl, postEquipControl } from '../http/basicEquipAdjust'
 
 const BASE_URL = 'http://43.155.36.236:5000'
 
@@ -18,19 +25,22 @@ struct TemperatureDetailPage {
   private sceneManager: AutomationSceneManager = AutomationSceneManager.getInstance()
 
   aboutToAppear() {
-    console.info('[Temperature Page] Page aboutToAppear, initiating initial data load')
-    // 立即加载数据
-    this.refreshData()
+    console.info('[Temperature Page] Page aboutToAppear starting...')
     
-    // 设置定时刷新
-    this.refreshTimer = setInterval(() => {
-      console.info('[Temperature Page] Refresh timer triggered')
+    // 先获取场景状态
+    this.updateSceneStates().then(() => {
+      console.info('[Temperature Page] Initial scene states updated, proceeding with data refresh')
+      // 获取场景状态后再加载数据
       this.refreshData()
-    }, 5 * 60 * 1000)
-
-    // 检查场景是否已启用
-    this.isAirConditionControlEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_TEMP_HUMI_AC)
-    this.isCurtainControlEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_TEMP_HUMI_CURTAIN)
+      
+      // 设置定时刷新
+      this.refreshTimer = setInterval(() => {
+        console.info('[Temperature Page] Refresh timer triggered')
+        this.refreshData()
+      }, 5 * 60 * 1000)
+    }).catch(() => {
+      console.error('[Temperature Page] Error in aboutToAppear')
+    })
   }
 
   aboutToDisappear() {
@@ -42,15 +52,50 @@ struct TemperatureDetailPage {
 
   async refreshData() {
     try {
-      console.info('[Temperature Page] Refreshing data')
+      console.info('[Temperature Page] Starting data refresh...')
       const latestData = await getLatestTemperature()
       this.currentTemp = latestData.temperature_indoor
       
       // 更新图表URL时添加时间戳
       this.chartImageUrl = `${BASE_URL}/chart/temperature?t=${Date.now()}`
-      console.info('[Temperature Page] Data refreshed successfully, new URL:', this.chartImageUrl)
+      console.info('[Temperature Page] Data refreshed successfully')
+
+      // 同时更新场景状态
+      console.info('[Temperature Page] Updating scene states after data refresh')
+      await this.updateSceneStates()
+    } catch {
+      console.error('[Temperature Page] Error in refreshData')
+    }
+  }
+
+  // 更新场景状态
+  private async updateSceneStates() {
+    try {
+      console.info('[Temperature Page] Starting to update scene states...')
+      const success = await this.sceneManager.fetchAllScenes()
+      console.info('[Temperature Page] fetchAllScenes result:', success)
+      
+      if (success) {
+        const acEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_TEMP_AC)
+        const curtainEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_TEMP_CURTAIN)
+        
+        console.info('[Temperature Page] Previous states - AC:', this.isAirConditionControlEnabled, 'Curtain:', this.isCurtainControlEnabled)
+        console.info('[Temperature Page] New states - AC:', acEnabled, 'Curtain:', curtainEnabled)
+        
+        // 只有当状态发生变化时才更新UI
+        if (this.isAirConditionControlEnabled !== acEnabled) {
+          this.isAirConditionControlEnabled = acEnabled
+        }
+        if (this.isCurtainControlEnabled !== curtainEnabled) {
+          this.isCurtainControlEnabled = curtainEnabled
+        }
+        
+        console.info('[Temperature Page] Scene states updated - AC:', this.isAirConditionControlEnabled, 'Curtain:', this.isCurtainControlEnabled)
+      } else {
+        console.error('[Temperature Page] Failed to fetch scene states')
+      }
     } catch (error) {
-      console.error('[Temperature Page] Failed to refresh data:', error.toString())
+      console.error('[Temperature Page] Error updating scene states:', error)
     }
   }
 
@@ -178,14 +223,14 @@ struct TemperatureDetailPage {
                 try {
                   if (!this.isAirConditionControlEnabled) {
                     // 启用温控空调场景
-                    const success = await this.sceneManager.enableScene(AUTO_MODE_TEMP_HUMI_AC)
+                    const success = await this.sceneManager.enableScene(AUTO_MODE_TEMP_AC)
                     if (success) {
                       this.isAirConditionControlEnabled = true
                       console.info('[Temperature Page] Air condition control enabled successfully')
                     }
                   } else {
                     // 禁用温控空调场景
-                    const success = await this.sceneManager.disableScene(AUTO_MODE_TEMP_HUMI_AC)
+                    const success = await this.sceneManager.disableScene(AUTO_MODE_TEMP_AC)
                     if (success) {
                       this.isAirConditionControlEnabled = false
                       console.info('[Temperature Page] Air condition control disabled successfully')
@@ -216,14 +261,14 @@ struct TemperatureDetailPage {
                 try {
                   if (!this.isCurtainControlEnabled) {
                     // 启用温控窗帘场景
-                    const success = await this.sceneManager.enableScene(AUTO_MODE_TEMP_HUMI_CURTAIN)
+                    const success = await this.sceneManager.enableScene(AUTO_MODE_TEMP_CURTAIN)
                     if (success) {
                       this.isCurtainControlEnabled = true
                       console.info('[Temperature Page] Curtain control enabled successfully')
                     }
                   } else {
                     // 禁用温控窗帘场景
-                    const success = await this.sceneManager.disableScene(AUTO_MODE_TEMP_HUMI_CURTAIN)
+                    const success = await this.sceneManager.disableScene(AUTO_MODE_TEMP_CURTAIN)
                     if (success) {
                       this.isCurtainControlEnabled = false
                       console.info('[Temperature Page] Curtain control disabled successfully')

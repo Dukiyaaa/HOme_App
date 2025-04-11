@@ -2,6 +2,14 @@ import { router } from '@kit.ArkUI'
 import { TemperatureAndHumidity } from '../models/RoomData'
 import { LineChart } from '../component/LineChart'
 import { getLatestTemperatureHumidity } from '../http/temperatureAndHumidity'
+import AutomationSceneManager, { AUTO_MODE_HUMI_AC, AUTO_MODE_HUMI_CURTAIN } from '../models/AutomationSceneManager'
+import { CloseAndOpenButton } from '../component/CloseAndOpenButton'
+import { HeadBackAndTitleComp } from '../component/HeadBackAndTitleComp'
+import { airConditionClass, elecAppTypeConst } from '../models/EquipData'
+import { roomClass } from '../models/RoomData'
+import { CloseAndYesButton } from '../models/CloseAndYesButton'
+import { SliderAdjust } from '../component/SliderAdjust'
+import { equipControl, postEquipControl } from '../http/basicEquipAdjust'
 
 const BASE_URL = 'http://43.155.36.236:5000'
 
@@ -14,16 +22,25 @@ struct HumidityDetailPage {
   @State isAirConditionControlEnabled: boolean = false
   @State isCurtainControlEnabled: boolean = false
 
+  private sceneManager: AutomationSceneManager = AutomationSceneManager.getInstance()
+
   aboutToAppear() {
-    console.info('[Humidity Page] Page aboutToAppear, initiating initial data load')
-    // 立即加载数据
-    this.refreshData()
+    console.info('[Humidity Page] Page aboutToAppear starting...')
     
-    // 设置定时刷新
-    this.refreshTimer = setInterval(() => {
-      console.info('[Humidity Page] Refresh timer triggered')
+    // 先获取场景状态
+    this.updateSceneStates().then(() => {
+      console.info('[Humidity Page] Initial scene states updated, proceeding with data refresh')
+      // 获取场景状态后再加载数据
       this.refreshData()
-    }, 5 * 60 * 1000)
+      
+      // 设置定时刷新
+      this.refreshTimer = setInterval(() => {
+        console.info('[Humidity Page] Refresh timer triggered')
+        this.refreshData()
+      }, 5 * 60 * 1000)
+    }).catch(() => {
+      console.error('[Humidity Page] Error in aboutToAppear')
+    })
   }
 
   aboutToDisappear() {
@@ -35,17 +52,52 @@ struct HumidityDetailPage {
 
   async refreshData() {
     try {
-      console.info('[Humidity Page] Refreshing data')
+      console.info('[Humidity Page] Starting data refresh...')
       const latestData = await getLatestTemperatureHumidity()
       if (latestData.status === 'success' && latestData.latest) {
         this.currentHumidity = latestData.latest.humidity_indoor
         
         // 更新图表URL时添加时间戳
         this.chartImageUrl = `${BASE_URL}/chart/humidity?t=${Date.now()}`
-        console.info('[Humidity Page] Data refreshed successfully, new URL:', this.chartImageUrl)
+        console.info('[Humidity Page] Data refreshed successfully')
+      }
+
+      // 同时更新场景状态
+      console.info('[Humidity Page] Updating scene states after data refresh')
+      await this.updateSceneStates()
+    } catch {
+      console.error('[Humidity Page] Error in refreshData')
+    }
+  }
+
+  // 更新场景状态
+  private async updateSceneStates() {
+    try {
+      console.info('[Humidity Page] Starting to update scene states...')
+      const success = await this.sceneManager.fetchAllScenes()
+      console.info('[Humidity Page] fetchAllScenes result:', success)
+      
+      if (success) {
+        const acEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_HUMI_AC)
+        const curtainEnabled = this.sceneManager.isSceneEnabled(AUTO_MODE_HUMI_CURTAIN)
+        
+        console.info('[Humidity Page] Previous states - AC:', this.isAirConditionControlEnabled, 'Curtain:', this.isCurtainControlEnabled)
+        console.info('[Humidity Page] New states - AC:', acEnabled, 'Curtain:', curtainEnabled)
+        
+        // 只有当状态发生变化时才更新UI
+        if (this.isAirConditionControlEnabled !== acEnabled) {
+          this.isAirConditionControlEnabled = acEnabled
+        }
+        if (this.isCurtainControlEnabled !== curtainEnabled) {
+          this.isCurtainControlEnabled = curtainEnabled
+        }
+        
+        console.info('[Humidity Page] Scene states updated - AC:', this.isAirConditionControlEnabled, 'Curtain:', this.isCurtainControlEnabled)
+      } else {
+        console.error('[Humidity Page] Failed to fetch scene states')
       }
     } catch (error) {
-      console.error('[Humidity Page] Failed to refresh data:', error.toString())
+      console.error('[Humidity Page] Error updating scene states:', error)
     }
   }
 
@@ -170,9 +222,26 @@ struct HumidityDetailPage {
               .height(40)
               .backgroundColor(this.isAirConditionControlEnabled ? '#5686E1' : '#E8E8E8')
               .borderRadius(20)
-              .onClick(() => {
-                this.isAirConditionControlEnabled = !this.isAirConditionControlEnabled;
-                console.info('[Humidity Page] Air condition control ' + (this.isAirConditionControlEnabled ? 'enabled' : 'disabled'));
+              .onClick(async () => {
+                try {
+                  if (!this.isAirConditionControlEnabled) {
+                    // 启用湿控空调场景
+                    const success = await this.sceneManager.enableScene(AUTO_MODE_HUMI_AC)
+                    if (success) {
+                      this.isAirConditionControlEnabled = true
+                      console.info('[Humidity Page] Air condition control enabled successfully')
+                    }
+                  } else {
+                    // 禁用湿控空调场景
+                    const success = await this.sceneManager.disableScene(AUTO_MODE_HUMI_AC)
+                    if (success) {
+                      this.isAirConditionControlEnabled = false
+                      console.info('[Humidity Page] Air condition control disabled successfully')
+                    }
+                  }
+                } catch (error) {
+                  console.error('[Humidity Page] Failed to toggle air condition control:', error)
+                }
               })
               
               Button() {
@@ -191,9 +260,26 @@ struct HumidityDetailPage {
               .height(40)
               .backgroundColor(this.isCurtainControlEnabled ? '#5686E1' : '#E8E8E8')
               .borderRadius(20)
-              .onClick(() => {
-                this.isCurtainControlEnabled = !this.isCurtainControlEnabled;
-                console.info('[Humidity Page] Curtain control ' + (this.isCurtainControlEnabled ? 'enabled' : 'disabled'));
+              .onClick(async () => {
+                try {
+                  if (!this.isCurtainControlEnabled) {
+                    // 启用湿控窗帘场景
+                    const success = await this.sceneManager.enableScene(AUTO_MODE_HUMI_CURTAIN)
+                    if (success) {
+                      this.isCurtainControlEnabled = true
+                      console.info('[Humidity Page] Curtain control enabled successfully')
+                    }
+                  } else {
+                    // 禁用湿控窗帘场景
+                    const success = await this.sceneManager.disableScene(AUTO_MODE_HUMI_CURTAIN)
+                    if (success) {
+                      this.isCurtainControlEnabled = false
+                      console.info('[Humidity Page] Curtain control disabled successfully')
+                    }
+                  }
+                } catch (error) {
+                  console.error('[Humidity Page] Failed to toggle curtain control:', error)
+                }
               })
             }
             .width('100%')

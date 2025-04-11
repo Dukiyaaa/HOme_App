@@ -4,6 +4,10 @@ import {airConditionModeConst,
   elecAppTypeConst,
   elecAppTypeConst2,
   typeClass} from './EquipData'
+import { AUTO_MODE_MOTION_LIGHT, AUTO_MODE_LIGHT_LIGHTNESS, AUTO_MODE_TEMP_AC, AUTO_MODE_TEMP_CURTAIN,
+  AUTO_MODE_HUMI_AC, AUTO_MODE_HUMI_CURTAIN, AUTO_MODE_SMOKE_ALARM, AUTO_MODE_NFC_HOME_MODE,
+  AUTO_MODE_AUTO_LOCK, AUTO_MODE_SILENT_ALARM, AUTO_MODE_ENERGY_SAVER, AUTO_MODE_LOW_VOLTAGE_PROTECT } from './AutomationSceneManager'
+
 export class SceneButtonItem{
   index:number=0
   title:string=''
@@ -469,3 +473,10 @@ export const TempModeListConst:ModeClass[]=
     airConditionWindWayConst.upAndDown,
     0)]))]))
   ]
+
+// 预设场景组合
+export const SCENE_LIGHT_CTRL = AUTO_MODE_MOTION_LIGHT | AUTO_MODE_LIGHT_LIGHTNESS;  // 人体感应 + 光照控制
+export const SCENE_TEMP_CTRL = AUTO_MODE_TEMP_AC | AUTO_MODE_TEMP_CURTAIN;  // 温度控制
+export const SCENE_HUMI_CTRL = AUTO_MODE_HUMI_AC | AUTO_MODE_HUMI_CURTAIN;  // 湿度控制
+export const SCENE_SECURITY_ALARM = AUTO_MODE_SMOKE_ALARM | AUTO_MODE_NFC_HOME_MODE | AUTO_MODE_AUTO_LOCK | AUTO_MODE_SILENT_ALARM;  // 安防报警
+export const SCENE_ENERGY_SAVER = AUTO_MODE_ENERGY_SAVER | AUTO_MODE_LOW_VOLTAGE_PROTECT;  // 节能模式
