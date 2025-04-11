@@ -10,6 +10,7 @@ import { roomClass } from '../models/RoomData'
 import { CloseAndYesButton } from '../models/CloseAndYesButton'
 import { SliderAdjust } from '../component/SliderAdjust'
 import { equipControl, postEquipControl } from '../http/basicEquipAdjust'
+import promptAction from '@ohos.promptAction'
 
 const BASE_URL = 'http://43.155.36.236:5000'
 
@@ -22,7 +23,9 @@ struct HumidityDetailPage {
   @State isAirConditionControlEnabled: boolean = false
   @State isCurtainControlEnabled: boolean = false
   private chartTimer: number = -1
+  private humidityCheckTimer: number = -1
   private readonly CHART_REFRESH_INTERVAL = 10 * 1000 // 10秒刷新一次
+  private readonly HUMIDITY_CHECK_INTERVAL = 5 * 1000 // 5秒检查一次湿度
 
   private sceneManager: AutomationSceneManager = AutomationSceneManager.getInstance()
   private dataCache: DeviceDataCache = DeviceDataCache.getInstance()
@@ -39,13 +42,16 @@ struct HumidityDetailPage {
       this.refreshTimer = setInterval(() => {
         console.info('[Humidity Page] Refresh timer triggered')
         this.refreshData()
-      }, 30 * 1000) // 30秒刷新一次
+      }, 2 * 1000) // 2秒刷新一次
 
       // 设置图表定时刷新
       this.chartTimer = setInterval(() => {
         console.info('[Humidity Page] Chart refresh timer triggered')
         this.chartImageUrl = `${BASE_URL}/chart/humidity?t=${Date.now()}`
       }, this.CHART_REFRESH_INTERVAL)
+
+      // 设置湿度检查定时器
+      this.startHumidityCheck()
     }).catch(() => {
       console.error('[Humidity Page] Error in aboutToAppear')
     })
@@ -58,6 +64,33 @@ struct HumidityDetailPage {
     }
     if (this.chartTimer !== -1) {
       clearInterval(this.chartTimer)
+    }
+    if (this.humidityCheckTimer !== -1) {
+      clearInterval(this.humidityCheckTimer)
+    }
+  }
+
+  // 开始湿度检查定时器
+  private startHumidityCheck() {
+    if (this.humidityCheckTimer !== -1) {
+      clearInterval(this.humidityCheckTimer)
+    }
+    // 立即执行一次检查
+    this.checkHumidity()
+    // 设置定时检查
+    this.humidityCheckTimer = setInterval(() => {
+      this.checkHumidity()
+    }, this.HUMIDITY_CHECK_INTERVAL)
+  }
+
+  // 检查湿度并显示提醒
+  private checkHumidity() {
+    if (this.isCurtainControlEnabled && this.currentHumidity > 75) {
+      promptAction.showToast({
+        message: '监测到环境湿度大于75%，已自动为您关闭窗帘',
+        duration: 3000,
+        bottom: 400
+      })
     }
   }
 
@@ -281,6 +314,8 @@ struct HumidityDetailPage {
                     if (success) {
                       this.isCurtainControlEnabled = true
                       console.info('[Humidity Page] Curtain control enabled successfully')
+                      // 启动湿度检查定时器
+                      this.startHumidityCheck()
                     }
                   } else {
                     // 禁用湿控窗帘场景
@@ -288,6 +323,11 @@ struct HumidityDetailPage {
                     if (success) {
                       this.isCurtainControlEnabled = false
                       console.info('[Humidity Page] Curtain control disabled successfully')
+                      // 清除湿度检查定时器
+                      if (this.humidityCheckTimer !== -1) {
+                        clearInterval(this.humidityCheckTimer)
+                        this.humidityCheckTimer = -1
+                      }
                     }
                   }
                 } catch (error) {

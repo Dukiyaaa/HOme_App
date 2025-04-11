@@ -20,7 +20,7 @@ struct FaceRecognitionPage {
   @State isLoading: boolean = true
   @State recognitionResult: string = ''
   private context = getContext(this) as common.UIAbilityContext
-  private cameraIP: string = '172.20.10.3'
+  private cameraIP: string = '192.168.10.229'
   private serverURL: string = 'http://43.155.36.236:5000/upload_photo'
   private controller: web_webview.WebviewController = new web_webview.WebviewController()
   private isUnloaded: boolean = false

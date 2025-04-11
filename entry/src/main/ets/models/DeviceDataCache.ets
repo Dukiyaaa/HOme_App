@@ -24,8 +24,8 @@ class DeviceDataCache {
   private static instance: DeviceDataCache
   private cache: CacheData | null = null
   private refreshTimer: number = -1
-  private readonly CACHE_EXPIRY_TIME = 30 * 1000 // 30秒
-  private readonly REFRESH_INTERVAL = 30 * 1000 // 30秒刷新一次
+  private readonly CACHE_EXPIRY_TIME = 2 * 1000 // 2秒
+  private readonly REFRESH_INTERVAL = 2 * 1000 // 2秒刷新一次
 
   private constructor() {}
 

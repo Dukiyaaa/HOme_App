@@ -11,6 +11,7 @@ import { roomClass } from '../models/RoomData'
 import { CloseAndYesButton } from '../models/CloseAndYesButton'
 import { SliderAdjust } from '../component/SliderAdjust'
 import { equipControl, postEquipControl } from '../http/basicEquipAdjust'
+import promptAction from '@ohos.promptAction'
 
 const BASE_URL = 'http://43.155.36.236:5000'
 
@@ -23,7 +24,9 @@ struct TemperatureDetailPage {
   @State isAirConditionControlEnabled: boolean = false
   @State isCurtainControlEnabled: boolean = false
   private chartTimer: number = -1
+  private temperatureCheckTimer: number = -1
   private readonly CHART_REFRESH_INTERVAL = 10 * 1000 // 10秒刷新一次
+  private readonly TEMP_CHECK_INTERVAL = 20 * 1000 // 20秒检查一次温度
 
   private sceneManager: AutomationSceneManager = AutomationSceneManager.getInstance()
   private dataCache: DeviceDataCache = DeviceDataCache.getInstance()
@@ -47,6 +50,9 @@ struct TemperatureDetailPage {
         console.info('[Temperature Page] Chart refresh timer triggered')
         this.chartImageUrl = `${BASE_URL}/chart/temperature?t=${Date.now()}`
       }, this.CHART_REFRESH_INTERVAL)
+
+      // 设置温度检查定时器
+      this.startTemperatureCheck()
     }).catch(() => {
       console.error('[Temperature Page] Error in aboutToAppear')
     })
@@ -59,6 +65,33 @@ struct TemperatureDetailPage {
     }
     if (this.chartTimer !== -1) {
       clearInterval(this.chartTimer)
+    }
+    if (this.temperatureCheckTimer !== -1) {
+      clearInterval(this.temperatureCheckTimer)
+    }
+  }
+
+  // 开始温度检查定时器
+  private startTemperatureCheck() {
+    if (this.temperatureCheckTimer !== -1) {
+      clearInterval(this.temperatureCheckTimer)
+    }
+    // 立即执行一次检查
+    this.checkTemperature()
+    // 设置定时检查
+    this.temperatureCheckTimer = setInterval(() => {
+      this.checkTemperature()
+    }, this.TEMP_CHECK_INTERVAL)
+  }
+
+  // 检查温度并显示提醒
+  private checkTemperature() {
+    if (this.isAirConditionControlEnabled && this.currentTemp > 25) {
+      promptAction.showToast({
+        message: '监测到环境温度大于25度，已自动为您打开制冷空调，风速为2档',
+        duration: 3000,
+        bottom: 400
+      })
     }
   }
 
@@ -243,6 +276,8 @@ struct TemperatureDetailPage {
                     if (success) {
                       this.isAirConditionControlEnabled = true
                       console.info('[Temperature Page] Air condition control enabled successfully')
+                      // 启动温度检查定时器
+                      this.startTemperatureCheck()
                     }
                   } else {
                     // 禁用温控空调场景
@@ -250,6 +285,11 @@ struct TemperatureDetailPage {
                     if (success) {
                       this.isAirConditionControlEnabled = false
                       console.info('[Temperature Page] Air condition control disabled successfully')
+                      // 清除温度检查定时器
+                      if (this.temperatureCheckTimer !== -1) {
+                        clearInterval(this.temperatureCheckTimer)
+                        this.temperatureCheckTimer = -1
+                      }
                     }
                   }
                 } catch (error) {
