@@ -13,6 +13,7 @@ import {UserInfoComp} from '../component/UserInfoComp'
 import {UserData} from '../models/UserData'
 import {TempModeListConst,SceneClass,SceneClassList,ModeClass}from '../models/SceneData'
 import {ModeListItemComp} from '../component/ModeListItemComp'
+import DeviceDataCache from '../models/DeviceDataCache'
 
 let too:ToolbarItem={
   value:'func',
@@ -67,11 +68,16 @@ struct Index {
   @State egDivider: DividerTmp = new DividerTmp(1, 50, 10, '#ffe9f0f0')
   @State modeList:ModeClass[]=TempModeListConst
 
-  onPageShow(): void {
-    const params=router.getParams()
+  aboutToAppear() {
+    // 初始化数据缓存
+    DeviceDataCache.getInstance().initialize().catch((error: Error) => {
+      console.error('[Index] Failed to initialize data cache:', error)
+    })
+
+    const params = router.getParams()
     console.info("page")
     if (params) {
-      const temp=params as sceData
+      const temp = params as sceData
       this.sceneList.push(temp)
     }
   }

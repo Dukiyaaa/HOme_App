@@ -1,8 +1,8 @@
 import { router } from '@kit.ArkUI'
 import { TemperatureAndHumidity } from '../models/RoomData'
 import { LineChart } from '../component/LineChart'
-import { getLatestTemperatureHumidity } from '../http/temperatureAndHumidity'
 import AutomationSceneManager, { AUTO_MODE_HUMI_AC, AUTO_MODE_HUMI_CURTAIN } from '../models/AutomationSceneManager'
+import DeviceDataCache from '../models/DeviceDataCache'
 import { CloseAndOpenButton } from '../component/CloseAndOpenButton'
 import { HeadBackAndTitleComp } from '../component/HeadBackAndTitleComp'
 import { airConditionClass, elecAppTypeConst } from '../models/EquipData'
@@ -21,52 +21,65 @@ struct HumidityDetailPage {
   private refreshTimer: number = -1
   @State isAirConditionControlEnabled: boolean = false
   @State isCurtainControlEnabled: boolean = false
+  private chartTimer: number = -1
+  private readonly CHART_REFRESH_INTERVAL = 10 * 1000 // 10秒刷新一次
 
   private sceneManager: AutomationSceneManager = AutomationSceneManager.getInstance()
+  private dataCache: DeviceDataCache = DeviceDataCache.getInstance()
 
   aboutToAppear() {
     console.info('[Humidity Page] Page aboutToAppear starting...')
     
-    // 先获取场景状态
-    this.updateSceneStates().then(() => {
-      console.info('[Humidity Page] Initial scene states updated, proceeding with data refresh')
-      // 获取场景状态后再加载数据
+    // 初始化数据缓存
+    this.dataCache.initialize().then(() => {
+      // 获取缓存数据
       this.refreshData()
       
       // 设置定时刷新
       this.refreshTimer = setInterval(() => {
         console.info('[Humidity Page] Refresh timer triggered')
         this.refreshData()
-      }, 5 * 60 * 1000)
+      }, 30 * 1000) // 30秒刷新一次
+
+      // 设置图表定时刷新
+      this.chartTimer = setInterval(() => {
+        console.info('[Humidity Page] Chart refresh timer triggered')
+        this.chartImageUrl = `${BASE_URL}/chart/humidity?t=${Date.now()}`
+      }, this.CHART_REFRESH_INTERVAL)
     }).catch(() => {
       console.error('[Humidity Page] Error in aboutToAppear')
     })
   }
 
   aboutToDisappear() {
-    console.info('[Humidity Page] Page aboutToDisappear, clearing timer')
+    console.info('[Humidity Page] Page aboutToDisappear, clearing timers')
     if (this.refreshTimer !== -1) {
       clearInterval(this.refreshTimer)
+    }
+    if (this.chartTimer !== -1) {
+      clearInterval(this.chartTimer)
     }
   }
 
   async refreshData() {
     try {
       console.info('[Humidity Page] Starting data refresh...')
-      const latestData = await getLatestTemperatureHumidity()
-      if (latestData.status === 'success' && latestData.latest) {
-        this.currentHumidity = latestData.latest.humidity_indoor
+      
+      // 从缓存获取最新数据
+      const cacheData = await this.dataCache.getLatestData()
+      if (cacheData) {
+        this.currentHumidity = cacheData.humidity_indoor
         
         // 更新图表URL时添加时间戳
         this.chartImageUrl = `${BASE_URL}/chart/humidity?t=${Date.now()}`
-        console.info('[Humidity Page] Data refreshed successfully')
+        console.info('[Humidity Page] Data refreshed from cache successfully')
       }
 
       // 同时更新场景状态
       console.info('[Humidity Page] Updating scene states after data refresh')
       await this.updateSceneStates()
-    } catch {
-      console.error('[Humidity Page] Error in refreshData')
+    } catch (error) {
+      console.error('[Humidity Page] Error in refreshData:', error)
     }
   }
 
