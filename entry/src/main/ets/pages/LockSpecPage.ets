@@ -51,7 +51,15 @@ struct LockSpecPage {
               .padding(12)
             }
             .onClick(() => {
-              console.info('点击了人脸识别入口');
+              router.pushUrl({
+                url: 'pages/FaceRecognitionPage'
+              }, router.RouterMode.Single, (err) => {
+                if (err) {
+                  console.error(`跳转失败: ${err.code}, ${err.message}`);
+                  return;
+                }
+                console.info('跳转到人脸识别页面成功');
+              });
             })
             .width('100%')
             .backgroundColor(Color.White)

@@ -39,6 +39,7 @@
     "pages/MonitorPage",
     "pages/TemperatureDetailPage",
     "pages/HumidityDetailPage",
-    "pages/PowerDetailPage"
+    "pages/PowerDetailPage",
+    "pages/FaceRecognitionPage"
   ]
 }
