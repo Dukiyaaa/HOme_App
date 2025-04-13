@@ -8,7 +8,7 @@ struct MonitorPage {
   @State debugText: string = ''
   @State isLoading: boolean = true
   private context = getContext(this) as common.UIAbilityContext
-  private cameraIP: string = '172.20.10.3'
+  private cameraIP: string = '192.168.10.229'
   private controller: web_webview.WebviewController = new web_webview.WebviewController()
 
   // 保存图片到相册

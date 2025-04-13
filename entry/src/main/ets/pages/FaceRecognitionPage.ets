@@ -149,11 +149,12 @@ struct FaceRecognitionPage {
   // 执行人脸识别
   private async performFaceRecognition(): Promise<void> {
     try {
-      this.debugText = '📸 拍照中...'
+      this.debugText = '[前端📸] 开始拍照...'
       const timestamp = Date.now()
       const request = http.createHttp()
-      
-      // 获取高清图片
+
+      console.log('[前端📸] 请求高清图像：', `http://${this.cameraIP}/capture_hd?time=${timestamp}`)
+
       const captureResponse = await request.request(
         `http://${this.cameraIP}/capture_hd?time=${timestamp}`,
         {
@@ -162,10 +163,12 @@ struct FaceRecognitionPage {
         }
       )
 
+      console.log('[前端📥] 拍照响应状态码：', captureResponse.responseCode)
+
       if (captureResponse.responseCode === 200) {
-        this.debugText = '📤 上传中...'
-        
-        // 上传图片进行识别
+        this.debugText = '[前端📤] 上传图像中...'
+        console.log('[前端📤] 开始上传到后端接口：', this.serverURL)
+
         const uploadResponse = await request.request(
           this.serverURL,
           {
@@ -177,35 +180,37 @@ struct FaceRecognitionPage {
           }
         )
 
+        console.log('[前端📬] 识别响应状态码：', uploadResponse.responseCode)
+
         if (uploadResponse.responseCode === 200) {
           const result = JSON.parse(uploadResponse.result as string) as RecognitionResult
-          console.log('🧠 识别结果：', result)
+          console.log('[前端🧠] 后端返回结果：', result)
 
           if (result.faces_detected > 0) {
             const names = result.results.map(item => item.name).join(', ')
-            
+
             if (names.includes('Unknown')) {
-              this.debugText = '⚠️ 未识别身份，禁止开门'
+              this.debugText = '[前端⚠️] 未识别身份'
               this.recognitionResult = '未知人脸'
             } else {
-              this.debugText = `✅ 识别到：${names}，已开门`
+              this.debugText = `[前端✅] 识别到：${names}`
               this.recognitionResult = `识别到：${names}`
             }
           } else {
-            this.debugText = '❌ 未识别到人脸'
+            this.debugText = '[前端❌] 未识别到人脸'
             this.recognitionResult = '未识别到人脸'
           }
         } else {
-          this.debugText = '⚠️ 识别失败'
+          this.debugText = '[前端⚠️] 后端识别失败'
           this.recognitionResult = '识别失败'
         }
       } else {
-        this.debugText = '⚠️ 拍照失败'
+        this.debugText = '[前端⚠️] 摄像头拍照失败'
         this.recognitionResult = '拍照失败'
       }
     } catch (error) {
-      console.error('人脸识别失败:', error)
-      this.debugText = '❌ 识别异常'
+      console.error('[前端❌] 异常：', error)
+      this.debugText = '[前端❌] 识别异常'
       this.recognitionResult = '识别异常'
     }
   }

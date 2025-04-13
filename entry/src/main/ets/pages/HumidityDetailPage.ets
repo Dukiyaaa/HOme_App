@@ -24,8 +24,8 @@ struct HumidityDetailPage {
   @State isCurtainControlEnabled: boolean = false
   private chartTimer: number = -1
   private humidityCheckTimer: number = -1
-  private readonly CHART_REFRESH_INTERVAL = 10 * 1000 // 10秒刷新一次
-  private readonly HUMIDITY_CHECK_INTERVAL = 5 * 1000 // 5秒检查一次湿度
+  private readonly CHART_REFRESH_INTERVAL = 30 * 1000 // 30秒刷新一次
+  private readonly HUMIDITY_CHECK_INTERVAL = 30 * 1000 // 30秒检查一次湿度
 
   private sceneManager: AutomationSceneManager = AutomationSceneManager.getInstance()
   private dataCache: DeviceDataCache = DeviceDataCache.getInstance()
@@ -42,7 +42,7 @@ struct HumidityDetailPage {
       this.refreshTimer = setInterval(() => {
         console.info('[Humidity Page] Refresh timer triggered')
         this.refreshData()
-      }, 2 * 1000) // 2秒刷新一次
+      }, 30 * 1000) // 30秒刷新一次
 
       // 设置图表定时刷新
       this.chartTimer = setInterval(() => {

@@ -29,7 +29,7 @@ struct ElectricityDetailPage {
       this.refreshTimer = setInterval(() => {
         console.info('[Electricity Page] Refresh timer triggered')
         this.refreshData()
-      }, 2 * 1000) // 2秒刷新一次
+      }, 30 * 1000) // 30秒刷新一次
     }).catch(() => {
       console.error('[Electricity Page] Error in aboutToAppear')
     })
