@@ -429,9 +429,10 @@ export const TempModeListConst:ModeClass[]=
   $r('app.media.diedao'),
   0,
   new elecAppAction(
-    [new airConditionAction(0, '客厅空调', elecAppTypeConst.lock, 0, 0, airConditionModeConst.auto, airConditionWindSpeedConst.low, airConditionWindWayConst.upAndDown, 0)],
     undefined,
-    [new curtainAction(0, '客厅空调', elecAppTypeConst2.curtain, 0)],
+    undefined,
+    undefined,
+    [new lockAction(0, '紧急电话', elecAppTypeConst.phone, 0)]
   )),new SceneClass(1,
   '定时服药',
   $r('app.media.yaowan'),

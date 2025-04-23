@@ -24,6 +24,9 @@ export class elecAppTypeClass {
   light: typeClass = new typeClass(1,'灯光', $r('app.media.light_blue'), $r('app.media.liight_gray'))
   curtain: typeClass = new typeClass(2,'窗帘', $r('app.media.curtain_blue'), $r('app.media.curtain_gray'))
   lock: typeClass = new typeClass(3,'门锁', $r('app.media.lock_blue'), $r('app.media.lock_gray'))
+  clock: typeClass = new typeClass(4,'时钟', $r('app.media.time_set'), $r('app.media.time_set'))
+  notice: typeClass = new typeClass(5,'提醒', $r('app.media.notice'), $r('app.media.notice'))
+  phone: typeClass = new typeClass(6,'电话', $r('app.media.phone'), $r('app.media.phone'))
 }
 
 export class elecAppTypeClass2 {
