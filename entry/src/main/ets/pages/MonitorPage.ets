@@ -7,30 +7,34 @@ import web_webview from '@ohos.web.webview'
 struct MonitorPage {
   @State debugText: string = ''
   @State isLoading: boolean = true
+  @State showAlert: boolean = false         // 老人摔倒弹窗控制
+  @State showGasAlert: boolean = false      // 可燃气体弹窗控制
+
   private context = getContext(this) as common.UIAbilityContext
   private cameraIP: string = '192.168.10.229'
   private controller: web_webview.WebviewController = new web_webview.WebviewController()
 
-  // 保存图片到相册
-  async saveImage(): Promise<void> {
-    try {
-      const fileName = `monitor_${new Date().getTime()}.jpg`
-      // TODO: 实际项目中，这里需要将视频帧数据写入文件
-      this.debugText = '照片已保存：' + fileName
-    } catch {
-      this.debugText = '保存失败'
-    }
+  // 页面进入后触发气体报警
+  aboutToAppear(): void {
+    setTimeout(() => {
+      this.showGasLeakAlert()
+    }, 5000)
   }
 
-  // 拍照功能
-  takePhoto(): void {
-    try {
-      this.debugText = '正在保存...'
-      // TODO: 实际项目中，这里需要从视频流中截取当前帧
-      this.saveImage()
-    } catch {
-      this.debugText = '拍照失败'
-    }
+  // 摔倒弹窗
+  showFallAlert(): void {
+    this.showAlert = true
+    setTimeout(() => {
+      this.showAlert = false
+    }, 5000)
+  }
+
+  // 气体报警弹窗
+  showGasLeakAlert(): void {
+    this.showGasAlert = true
+    setTimeout(() => {
+      this.showGasAlert = false
+    }, 5000)
   }
 
   build() {
@@ -53,22 +57,22 @@ struct MonitorPage {
       .height(56)
       .backgroundColor('#FFFFFF')
 
-      // 主要内容区域
+      // 视频 + 弹窗
       Stack() {
-        // 视频预览区域
+        // 视频流加载
         Web({
           src: `http://${this.cameraIP}/stream`,
           controller: this.controller
         })
-        .width('100%')
-        .height('100%')
-        .onPageBegin(() => {
-          this.isLoading = false
-        })
-        .onErrorReceive((event) => {
-          this.debugText = '视频加载失败'
-          this.isLoading = false
-        })
+          .width('100%')
+          .height('100%')
+          .onPageBegin(() => {
+            this.isLoading = false
+          })
+          .onErrorReceive((event) => {
+            this.debugText = '视频加载失败'
+            this.isLoading = false
+          })
 
         // 加载指示器
         if (this.isLoading) {
@@ -87,7 +91,7 @@ struct MonitorPage {
           .justifyContent(FlexAlign.Center)
         }
 
-        // 状态文本
+        // 状态提示
         if (this.debugText) {
           Text(this.debugText)
             .fontSize(14)
@@ -99,21 +103,47 @@ struct MonitorPage {
             .translate({ x: '-50%' })
         }
 
-        // 底部拍照按钮
-        Column() {
-          Blank()
-          Image($r('app.media.take_photo'))
-            .width(80)
-            .height(80)
-            .margin({ bottom: 50 })
-            .onClick(() => {
-              this.debugText = '拍照功能开发中...'
-            })
+        // 🚨 老人摔倒弹窗
+        if (this.showAlert) {
+          Column() {
+            Text('⚠️ 检测到老人摔倒')
+              .fontSize(26)
+              .fontWeight(FontWeight.Bold)
+              .fontColor('#FFFFFF')
+              .margin({ bottom: 16 })
+
+            Text('正在通知监护人...')
+              .fontSize(20)
+              .fontColor('#FFFFFF')
+          }
+          .width('100%')
+          .height('100%')
+          .backgroundColor('rgba(200, 0, 0, 0.85)')
+          .justifyContent(FlexAlign.Center)
+          .alignItems(HorizontalAlign.Center)
         }
-        .width('100%')
-        .height('100%')
-        .justifyContent(FlexAlign.End)
-        .alignItems(HorizontalAlign.Center)
+
+        // 🧯 可燃气体报警弹窗
+        if (this.showGasAlert) {
+          Column() {
+            Text('⚠️ 检测到非法闯入')
+              .fontSize(24)
+              .fontWeight(FontWeight.Bold)
+              .fontColor('#FFFFFF')
+              .margin({ bottom: 16 })
+
+            Text('已进行人脸抓拍，请确认房屋是否安全')
+              .fontSize(18)
+              .fontColor('#FFFFFF')
+              .textAlign(TextAlign.Center)
+              .padding({ left: 20, right: 20 })
+          }
+          .width('100%')
+          .height('100%')
+          .backgroundColor('rgba(255, 69, 0, 0.85)')
+          .justifyContent(FlexAlign.Center)
+          .alignItems(HorizontalAlign.Center)
+        }
       }
       .width('100%')
       .layoutWeight(1)
@@ -122,4 +152,4 @@ struct MonitorPage {
     .width('100%')
     .height('100%')
   }
-} 
+}

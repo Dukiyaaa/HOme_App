@@ -3,11 +3,10 @@ import common from '@ohos.app.ability.common'
 import web_webview from '@ohos.web.webview'
 import http from '@ohos.net.http'
 
-// 使用class代替interface来定义类型
+// 定义识别结果结构
 class RecognitionResultItem {
   name: string = ''
 }
-
 class RecognitionResult {
   faces_detected: number = 0
   results: RecognitionResultItem[] = []
@@ -24,6 +23,8 @@ struct FaceRecognitionPage {
   private serverURL: string = 'http://43.155.36.236:5000/upload_photo'
   private controller: web_webview.WebviewController = new web_webview.WebviewController()
   private isUnloaded: boolean = false
+
+  private failCount: number = 0  // 新增失败计数器
 
   aboutToAppear(): void {
     this.isUnloaded = false
@@ -53,25 +54,23 @@ struct FaceRecognitionPage {
       .height(56)
       .backgroundColor('#FFFFFF')
 
-      // 视频预览区域容器
+      // 视频区域
       Column() {
         Stack() {
-          // 视频预览区域
           Web({
             src: `http://${this.cameraIP}/stream`,
             controller: this.controller
           })
-          .width('100%')
-          .height('100%')
-          .onPageBegin(() => {
-            this.isLoading = false
-          })
-          .onErrorReceive((event) => {
-            this.debugText = '视频加载失败'
-            this.isLoading = false
-          })
+            .width('100%')
+            .height('100%')
+            .onPageBegin(() => {
+              this.isLoading = false
+            })
+            .onErrorReceive((event) => {
+              this.debugText = '视频加载失败'
+              this.isLoading = false
+            })
 
-          // 加载指示器
           if (this.isLoading) {
             Column() {
               LoadingProgress()
@@ -88,7 +87,6 @@ struct FaceRecognitionPage {
             .justifyContent(FlexAlign.Center)
           }
 
-          // 状态文本
           if (this.debugText) {
             Text(this.debugText)
               .fontSize(14)
@@ -119,12 +117,11 @@ struct FaceRecognitionPage {
           .margin({ top: 20 })
       }
 
-      // 空白间距
       Blank()
         .layoutWeight(1)
         .backgroundColor('#F5F5F5')
 
-      // 底部按钮区域
+      // 底部识别按钮
       Row() {
         Button('📸 点击识别开门')
           .width('80%')
@@ -146,72 +143,40 @@ struct FaceRecognitionPage {
     .backgroundColor('#F5F5F5')
   }
 
-  // 执行人脸识别
+  // 模拟识别流程
   private async performFaceRecognition(): Promise<void> {
-    try {
-      this.debugText = '[前端📸] 开始拍照...'
-      const timestamp = Date.now()
-      const request = http.createHttp()
+    this.debugText = '📸 拍照中...'
 
-      console.log('[前端📸] 请求高清图像：', `http://${this.cameraIP}/capture_hd?time=${timestamp}`)
+    setTimeout(() => {
+      this.failCount += 1
 
-      const captureResponse = await request.request(
-        `http://${this.cameraIP}/capture_hd?time=${timestamp}`,
-        {
-          method: http.RequestMethod.GET,
-          expectDataType: http.HttpDataType.ARRAY_BUFFER
-        }
-      )
+      if (this.failCount <= 3) {
+        this.debugText = '❌ 未识别到有效人脸'
+        this.recognitionResult = `识别失败 第 ${this.failCount} 次`
 
-      console.log('[前端📥] 拍照响应状态码：', captureResponse.responseCode)
-
-      if (captureResponse.responseCode === 200) {
-        this.debugText = '[前端📤] 上传图像中...'
-        console.log('[前端📤] 开始上传到后端接口：', this.serverURL)
-
-        const uploadResponse = await request.request(
-          this.serverURL,
-          {
-            method: http.RequestMethod.POST,
-            header: {
-              'Content-Type': 'multipart/form-data'
-            },
-            extraData: captureResponse.result as ArrayBuffer
+        AlertDialog.show({
+          title: '识别失败',
+          message: `未识别到有效人脸（第 ${this.failCount} 次）`,
+          confirm: {
+            value: '确定',
+            action: () => {}
           }
-        )
-
-        console.log('[前端📬] 识别响应状态码：', uploadResponse.responseCode)
-
-        if (uploadResponse.responseCode === 200) {
-          const result = JSON.parse(uploadResponse.result as string) as RecognitionResult
-          console.log('[前端🧠] 后端返回结果：', result)
-
-          if (result.faces_detected > 0) {
-            const names = result.results.map(item => item.name).join(', ')
-
-            if (names.includes('Unknown')) {
-              this.debugText = '[前端⚠️] 未识别身份'
-              this.recognitionResult = '未知人脸'
-            } else {
-              this.debugText = `[前端✅] 识别到：${names}`
-              this.recognitionResult = `识别到：${names}`
-            }
-          } else {
-            this.debugText = '[前端❌] 未识别到人脸'
-            this.recognitionResult = '未识别到人脸'
-          }
-        } else {
-          this.debugText = '[前端⚠️] 后端识别失败'
-          this.recognitionResult = '识别失败'
-        }
+        })
       } else {
-        this.debugText = '[前端⚠️] 摄像头拍照失败'
-        this.recognitionResult = '拍照失败'
+        this.debugText = '🚨 检测到异常识别行为'
+        this.recognitionResult = '⚠️ 检测到非法闯入'
+
+        AlertDialog.show({
+          title: '报警提示',
+          message: '检测到有人试图非法闯入，请检测房屋是否安全 ❗️',
+          confirm: {
+            value: '我知道了',
+            action: () => {}
+          }
+        })
+
+        this.failCount = 0 // 可选：重置计数器
       }
-    } catch (error) {
-      console.error('[前端❌] 异常：', error)
-      this.debugText = '[前端❌] 识别异常'
-      this.recognitionResult = '识别异常'
-    }
+    }, 3000)
   }
-} 
+}
