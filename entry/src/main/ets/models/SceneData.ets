@@ -383,9 +383,9 @@ export const TempModeListConst:ModeClass[]=
         undefined,
         [new curtainAction(0, '客厅空调', elecAppTypeConst2.light, 0)]
       )),new SceneClass(1,
-      '跌倒检测',
-      $r('app.media.diedao'),
-      $r('app.media.diedao'),
+      '经期跟踪',
+      $r('app.media.jingqi2'),
+      $r('app.media.jingqi2'),
       0,
       new elecAppAction([new airConditionAction(0,
         '客厅空调',
@@ -424,9 +424,9 @@ export const TempModeListConst:ModeClass[]=
         0)]))])),
     new ModeClass(3,'老人关怀模式',new SceneClassList([new SceneClass(
   0,
-  '经期跟踪',
-  $r('app.media.jingqi2'),
-  $r('app.media.jingqi2'),
+  '跌倒检测',
+  $r('app.media.diedao'),
+  $r('app.media.diedao'),
   0,
   new elecAppAction(
     [new airConditionAction(0, '客厅空调', elecAppTypeConst.lock, 0, 0, airConditionModeConst.auto, airConditionWindSpeedConst.low, airConditionWindWayConst.upAndDown, 0)],
